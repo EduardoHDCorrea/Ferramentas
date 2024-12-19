@@ -8,7 +8,7 @@ using TextCopy;
 
 namespace Ferramentas.Cli.Comandos;
 
-internal sealed class ObterProjetosAlteradosNaBranchComando : Command<ObterProjetosAlteradosNaBranchComando.Parâmetros>
+internal sealed class ResumirPrComando : Command<ResumirPrComando.Parâmetros>
 {
     public sealed class Parâmetros : CommandSettings
     {
@@ -59,7 +59,7 @@ internal sealed class ObterProjetosAlteradosNaBranchComando : Command<ObterProje
             {
                 projetosAlterados.AddRange(ListarProjetosAlteradosNosCommitsFiltrados(
                     context,
-                    parâmetros.Diretório,
+                    Path.GetFullPath(parâmetros.Diretório),
                     branch,
                     identificadorDaTarefa
                 ));
@@ -189,7 +189,9 @@ internal sealed class ObterProjetosAlteradosNaBranchComando : Command<ObterProje
             .SubstituirVariáveisNoTexto();
 
         var caminhoDoArquivoGerado = Path.Combine(
-            parâmetros.DiretórioDeDestinoDoArquivoGerado ?? ".",
+            parâmetros.DiretórioDeDestinoDoArquivoGerado is not null
+                ? Path.GetFullPath(parâmetros.DiretórioDeDestinoDoArquivoGerado)
+                : parâmetros.Diretório,
             $"pull-request-{identificadorDaTarefa}.md"
         );
 

@@ -10,7 +10,7 @@
         <LicenseUrl>https://opensource.org/licenses/MIT</LicenseUrl>
         <RepositoryUrl>https://github.com/EduardoHDCorrea/Ferramentas</RepositoryUrl>
         <ToolCommandName>backend-tools</ToolCommandName>
-        <Version>1.0.1</Version>
+        <Version>1.0.2</Version>
         <Authors>EduardoHDCorrea</Authors>
         <Description>Faz uns bagulho.</Description>
         <PackageOutputPath>./nupkg</PackageOutputPath>
@@ -24,6 +24,11 @@
     
     <ItemGroup>
         <None Include="pull-request-template.md" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always"/>
+        <None Remove="nupkg\Ferramentas.Cli.1.0.1.nupkg" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="nupkg\" />
     </ItemGroup>
 
 </Project>
