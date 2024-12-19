@@ -10,9 +10,10 @@
         <LicenseUrl>https://opensource.org/licenses/MIT</LicenseUrl>
         <RepositoryUrl>https://github.com/EduardoHDCorrea/Ferramentas</RepositoryUrl>
         <ToolCommandName>backend-tools</ToolCommandName>
-        <Version>1.0.0</Version>
-        <Authors>EduardoSupremo8000</Authors>
+        <Version>1.0.1</Version>
+        <Authors>EduardoHDCorrea</Authors>
         <Description>Faz uns bagulho.</Description>
+        <PackageOutputPath>./nupkg</PackageOutputPath>
     </PropertyGroup>
 
     <ItemGroup>
