@@ -11,7 +11,7 @@ internal static class Program
         app.Configure(
             x =>
             {
-                x.AddCommand<ObterProjetosAlteradosNaBranchComando>("resumir-pr")
+                x.AddCommand<ResumirPrComando>("resumir-pr")
                     .WithDescription("Gera um markdown da descrição do PR.")
                     .WithAlias("rp");
             });
