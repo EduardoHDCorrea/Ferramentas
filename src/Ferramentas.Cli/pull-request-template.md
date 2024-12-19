@@ -9,7 +9,6 @@
 ## Quais projetos foram criados, alterados ou corrigidos?
 
 {{Projetos}}
-
 ## Existe alguma configuração para habilitar a opção? 
 
 {{ConfiguracaoParaHabilitarOpcao}}
@@ -21,10 +20,6 @@
 ## Descreva o procedimento de teste realizado antes de fazer o post da tarefa:
 
 {{ProcedimentoDeTestes}}
-
-### Executou os testes automatizados e todos passaram?
-
-{{TestesAutomatizadosComSucesso}}
 
 ## Depende de outro PR? Se sim, qual?
 

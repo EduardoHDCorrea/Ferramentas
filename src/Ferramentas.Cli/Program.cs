@@ -7,19 +7,13 @@ internal static class Program
 {
     public static void Main(string[] args)
     {
-        args =
-        [
-            "obter-projetos-alterados-na-branch",
-            "C:/Sky/TerraMedia/core", "tarefa/15716"
-        ];
-
         var app = new CommandApp();
         app.Configure(
             x =>
             {
-                x.AddCommand<ObterProjetosAlteradosNaBranchComando>("obter-projetos-alterados-na-branch")
-                    .WithDescription("Lista os diretórios de projetos alterados em uma branch.")
-                    .WithAlias("opab");
+                x.AddCommand<ObterProjetosAlteradosNaBranchComando>("resumir-pr")
+                    .WithDescription("Gera um markdown da descrição do PR.")
+                    .WithAlias("rp");
             });
         app.Run(args);
     }

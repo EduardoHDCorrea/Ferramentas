@@ -6,11 +6,23 @@
         <LangVersion>latest</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <PackAsTool>true</PackAsTool>
+        <LicenseUrl>https://opensource.org/licenses/MIT</LicenseUrl>
+        <RepositoryUrl>https://github.com/EduardoHDCorrea/Ferramentas</RepositoryUrl>
+        <ToolCommandName>backend-tools</ToolCommandName>
+        <Version>1.0.0</Version>
+        <Authors>EduardoSupremo8000</Authors>
+        <Description>Faz uns bagulho.</Description>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Spectre.Console.Cli" Version="0.49.1" />
       <PackageReference Include="System.Globalization" Version="4.3.0" />
+      <PackageReference Include="TextCopy" Version="6.2.1" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <None Include="pull-request-template.md" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always"/>
     </ItemGroup>
 
 </Project>

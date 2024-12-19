@@ -1,0 +1,80 @@
+﻿name: Publish do pacote de CLI
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - '*'
+
+env:
+  DOTNET_VERSION: '8.x'
+  BUILD_CONFIGURATION: 'Release'
+  DIRETORIO_NUGET: ${{ github.workspace }}/nuget
+  SOURCE_NUGET: https://nuget.pkg.github.com/${{ github.repository }}
+
+jobs:
+  build:
+    name: Build do projeto e execução dos testes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Preparar o .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Executar restore
+        run: dotnet restore
+
+      - name: Executar build
+        run: dotnet build -c ${{ env.BUILD_CONFIGURATION }} --no-restore
+
+      - name: Executar testes da solução
+        run: dotnet test -c ${{ env.BUILD_CONFIGURATION }}
+
+      - name: Fazer pack do projeto
+        run: dotnet pack ./src/Ferramentas.Cli/Ferramentas.Cli.csproj -c ${{ env.BUILD_CONFIGURATION }} -o ${{ env.DIRETORIO_NUGET }} --no-restore
+
+      - name: Publicar o artefato do pacote
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget
+          if-no-files-found: error
+          retention-days: 7
+          path: ${{ env.DIRETORIO_NUGET }}/*.nupkg
+
+  deploy:
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
+    runs-on: ubuntu-latest
+    needs: [ build ]
+    steps:
+      - name: Baixar o artefato gerado no build
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget
+          path: ${{ env.DIRETORIO_NUGET }}
+
+      - name: Preparar o .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Adicionar credenciais no nuget.config para publicação
+        run: dotnet nuget add source --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ github.actor }}/index.json"
+
+      - name: Publicar o pacote
+        shell: pwsh
+        run: |
+          foreach($file in (Get-ChildItem "${{ env.DIRETORIO_NUGET }}" -Recurse -Include *.nupkg)) {
+              dotnet nuget push $file --api-key "${{ secrets.GITHUB_TOKEN }}" --source "github"  --skip-duplicate
+          }

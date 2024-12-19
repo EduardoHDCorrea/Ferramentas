@@ -1,8 +1,10 @@
 using System.ComponentModel;
+using System.Text;
 using Ferramentas.Cli.Infraestrutura;
 using Ferramentas.Cli.Infraestrutura.ServiçosEstáticos;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using TextCopy;
 
 namespace Ferramentas.Cli.Comandos;
 
@@ -16,20 +18,26 @@ internal sealed class ObterProjetosAlteradosNaBranchComando : Command<ObterProje
         [CommandArgument(1, "<BRANCH>"), Description("Nome da branch.")]
         public required string Branch { get; set; }
 
-        [CommandOption("-t|--tarefa <TAREFA>"), Description("Identificador da tarefa. Por padrão pega o nome da branch.")]
+        [CommandOption("-t|--tarefa <TAREFA>"),
+         Description("Identificador da tarefa. Por padrão pega o nome da branch.")]
         public string? IdentificadorDaTarefa { get; set; }
+        
+        [CommandOption("-o|--output <CAMINHO>"),
+         Description("Diretório onde o arquivo gerado será armazenado.")]
+        public string? DiretórioDeDestinoDoArquivoGerado { get; set; }
     }
 
     public override int Execute(CommandContext contexto, Parâmetros parâmetros)
     {
         var branch = parâmetros.Branch;
         var identificadorDaTarefa = parâmetros.IdentificadorDaTarefa ?? branch.Split("/").Last();
-        var diretóriosAlterados = new List<string>();
+        var projetosAlterados = new List<string>();
 
         if (parâmetros.IdentificadorDaTarefa is null)
         {
             var usarIdentificadorDaBranch = AnsiConsole.Prompt(
-                new TextPrompt<bool>($"Usar o identificador '#{identificadorDaTarefa}' da branch como identificador da tarefa?")
+                new TextPrompt<bool>(
+                        $"Usar o identificador '#{identificadorDaTarefa}' da branch como identificador da tarefa?")
                     .AddChoice(true)
                     .AddChoice(false)
                     .DefaultValue(true)
@@ -43,42 +51,196 @@ internal sealed class ObterProjetosAlteradosNaBranchComando : Command<ObterProje
                 );
         }
 
-        AnsiConsole.Status().Start("Buscando projetos alterados...", statusContext =>
+        AnsiConsole.Status()
+            .AutoRefresh(true)
+            .Spinner(Spinner.Known.Dots)
+            .SpinnerStyle(Style.Parse("yellow bold"))
+            .Start("Obtendo lista de projetos alterados...", context =>
+            {
+                projetosAlterados.AddRange(ListarProjetosAlteradosNosCommitsFiltrados(
+                    context,
+                    parâmetros.Diretório,
+                    branch,
+                    identificadorDaTarefa
+                ));
+            });
+
+        var tabela = new Table();
+        tabela.AddColumn("Projetos Alterados");
+        tabela.AddColumn("Tipo do Projeto");
+
+        foreach (var projeto in projetosAlterados.OrderBy(x => x.Contains("Tests")))
         {
-            statusContext.Spinner(Spinner.Known.Default);
-            statusContext.SpinnerStyle(Style.Parse("yellow"));
+            var projetoDeTestes = projeto.Contains("Tests", StringComparison.InvariantCultureIgnoreCase);
+            tabela.AddRow(projeto, projetoDeTestes ? "[green bold]Teste[/]" : "[blue bold]Fonte[/]");
+        }
 
-            diretóriosAlterados.AddRange(ListarProjetosAlteradosNosCommitsFiltrados(
-                parâmetros.Diretório,
-                branch,
-                identificadorDaTarefa
-            ));
-        });
+        AnsiConsole.Write(tabela);
 
-        AnsiConsole.MarkupLine($"[bold]Projetos alterados na branch '{branch}' com a tarefa '#{identificadorDaTarefa}':[/]");
+        var estadoAfetado = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .AddChoices("RS", "PR", "Ambos")
+                .Title("[blue bold]Qual estado é afetado com este PR?[/]")
+        );
 
-        var listaVisual = diretóriosAlterados
-            .ConvertAll(x => new Text(x));
+        var novosComportamentos = AnsiConsole.Prompt(
+            new TextPrompt<string>("[blue bold]Quais comportamentos foram criados, alterados ou corrigidos?[/]")
+                .Validate(x => x.Length > 0
+                    ? ValidationResult.Success()
+                    : ValidationResult.Error("[red bold]Informe ao menos um comportamento.[/]"))
+        );
 
-        AnsiConsole.Write(new Rows(listaVisual));
+        string? configuraçãoParaHabilitar = null;
+        var existeConfiguraçãoParaHabilitar = AnsiConsole.Prompt(
+            new TextPrompt<bool>("Existe alguma configuração para habilitar a opção? ")
+                .AddChoice(false)
+                .AddChoice(true)
+                .DefaultValue(false)
+                .WithConverter(x => x ? "Sim" : "Não")
+        );
 
+        if (existeConfiguraçãoParaHabilitar)
+            configuraçãoParaHabilitar = AnsiConsole.Prompt(
+                new TextPrompt<string>("Informe a configuração que deve ser habilitada:")
+            );
 
+        var endpointAfetado = AnsiConsole.Prompt(
+            new TextPrompt<string>("[blue bold]Qual endpoint é afetado com este PR?[/]")
+                .DefaultValue("Nenhum.")
+        );
 
+        var testesAutomatizadosComSucesso = AnsiConsole.Prompt(
+            new TextPrompt<bool>("[blue bold]Os testes automatizados foram executados com sucesso?[/]")
+                .AddChoices([true, false])
+                .DefaultValue(true)
+                .WithConverter(x => x ? "Sim" : "Não")
+        );
+
+        string? outroProcedimentoDeTestes = null;
+        var houveOutroProcedimentoDeTestes = AnsiConsole.Prompt(
+            new TextPrompt<bool>("[blue bold]Houve outro procedimento de testes?[/]")
+                .AddChoices([true, false])
+                .DefaultValue(false)
+                .WithConverter(x => x ? "Sim" : "Não")
+        );
+
+        if (houveOutroProcedimentoDeTestes)
+            outroProcedimentoDeTestes = AnsiConsole.Prompt(
+                new TextPrompt<string>("[blue bold]Informe o procedimento de testes realizado:[/]")
+            );
+
+        string? dependênciaDeOutroPr = null;
+        var existeDependênciaDeOutroPr = AnsiConsole.Prompt(
+            new TextPrompt<bool>("[blue bold]Este PR depende de outro?[/]")
+                .AddChoices([true, false])
+                .DefaultValue(false)
+                .WithConverter(x => x ? "Sim" : "Não")
+        );
+
+        if (existeDependênciaDeOutroPr)
+            dependênciaDeOutroPr = AnsiConsole.Prompt(
+                new TextPrompt<string>("[blue bold]Informe o identificador do PR que este PR depende:[/]")
+            );
+
+        string? pacoteParaGerar = null;
+        var precisaGerarPacote = AnsiConsole.Prompt(
+            new SelectionPrompt<bool>()
+                .AddChoices(true, false)
+                .Title("[blue bold]Precisa gerar pacote?[/]")
+        );
+
+        if (precisaGerarPacote)
+            pacoteParaGerar = AnsiConsole.Prompt(
+                new TextPrompt<string>("[blue bold]Informe o nome do pacote que deve ser gerado:[/]")
+            );
+
+        var caminhoDoArquivoTemplate = Path.Combine(
+            AppDomain.CurrentDomain.BaseDirectory,
+            "pull-request-template.md"
+        );
+
+        var projetosAlteradosEmListaMarkdown = new StringBuilder();
+        foreach (var projeto in projetosAlterados)
+            projetosAlteradosEmListaMarkdown.AppendLine($"- `{projeto}`");
+
+        var resultadoTestesAutomatizadosTexto = testesAutomatizadosComSucesso
+            ? "sucesso"
+            : "falha";
+        var procedimentosDeTesteEmListaMarkdown = new StringBuilder();
+        procedimentosDeTesteEmListaMarkdown.AppendLine(
+            $"- Testes automatizados executados com {resultadoTestesAutomatizadosTexto}."
+        );
+
+        if (houveOutroProcedimentoDeTestes)
+            procedimentosDeTesteEmListaMarkdown.AppendLine($"- {outroProcedimentoDeTestes}");
+
+        Variáveis.DefinirVariável("EstadoAfetado", estadoAfetado);
+        Variáveis.DefinirVariável("Comportamentos", novosComportamentos);
+        Variáveis.DefinirVariável("ConfiguracaoParaHabilitarOpcao", configuraçãoParaHabilitar ?? "Nenhuma.");
+        Variáveis.DefinirVariável("Endpoint", endpointAfetado);
+        Variáveis.DefinirVariável("TestesAutomatizadosComSucesso", testesAutomatizadosComSucesso ? "Sim" : "Não");
+        Variáveis.DefinirVariável("ProcedimentoDeTestes", procedimentosDeTesteEmListaMarkdown.ToString());
+        Variáveis.DefinirVariável("DependeDeOutroPR", dependênciaDeOutroPr ?? "Não.");
+        Variáveis.DefinirVariável("GerarNovaVersaoPacote", pacoteParaGerar ?? "Não.");
+        Variáveis.DefinirVariável("Projetos", projetosAlteradosEmListaMarkdown.ToString());
+
+        var conteúdoDoArquivoTemplate = File
+            .ReadAllText(caminhoDoArquivoTemplate)
+            .SubstituirVariáveisNoTexto();
+
+        var caminhoDoArquivoGerado = Path.Combine(
+            parâmetros.DiretórioDeDestinoDoArquivoGerado ?? ".",
+            $"pull-request-{identificadorDaTarefa}.md"
+        );
+
+        File.WriteAllText(
+            caminhoDoArquivoGerado,
+            conteúdoDoArquivoTemplate
+        );
+
+        var painel = new Panel(new TextPath(caminhoDoArquivoGerado))
+            .Header("[bold]Caminho do Arquivo Gerado[/]")
+            .Border(BoxBorder.Rounded)
+            .HeaderAlignment(Justify.Center);
+
+        AnsiConsole.Write(painel);
+
+        var copiarConteúdoGerado = AnsiConsole.Prompt(
+            new SelectionPrompt<bool>()
+                .Title("Copiar o conteúdo gerado?")
+                .AddChoices(true, false)
+        );
+
+        if (copiarConteúdoGerado)
+            ClipboardService.SetText(conteúdoDoArquivoTemplate);
+
+        AnsiConsole.Markup("🎉 [bold green]Conteúdo copiado para a área de transferência.[/]");
+        AnsiConsole.Markup("[dim]Esperando 3 segundos para fechar...[/]");
+        Thread.Sleep(3000);
         return 0;
     }
 
     private static List<string> ListarProjetosAlteradosNosCommitsFiltrados(
+        StatusContext context,
         string diretórioDoRepositório,
         string branch,
         string identificadorDaTarefa
     )
     {
+        context.Status("[yellow bold]Obtendo informações dos commits da branch...[/]");
         var commits = ObterInformaçõesDosCommitsDaBranch(branch, diretórioDoRepositório);
         var pattern = "#" + identificadorDaTarefa;
+
+        AnsiConsole.MarkupLine("✓ [green bold]Obtendo informações dos commits da branch...[/]");
+
+        context.Status("[yellow bold]Filtrando commits por identificador da tarefa...[/]");
         var commitsFiltrados = commits
             .Where(c => c.Mensagem.StartsWith(pattern))
             .ToList();
 
+        AnsiConsole.MarkupLine("✓ [green bold]Filtrando commits por identificador da tarefa...[/]");
+
+        context.Status("[yellow bold]Organizando projetos alterados nos commits filtrados...[/]");
         var projetosAlterados = new HashSet<string>();
         foreach (var commit in commitsFiltrados)
         {
@@ -92,12 +254,13 @@ internal sealed class ObterProjetosAlteradosNaBranchComando : Command<ObterProje
 
                     projetosAlterados.Add(Path.GetFileNameWithoutExtension(projetoDoArquivo));
                 }
-                catch (Exception exception)
+                catch
                 {
-                    AnsiConsole.Markup($"[red]{exception.Message}[/]");
+                    // ignorada
                 }
         }
 
+        AnsiConsole.MarkupLine("✓ [green bold]Organizando projetos alterados nos commits filtrados...[/]");
         return projetosAlterados.ToList();
     }
 
