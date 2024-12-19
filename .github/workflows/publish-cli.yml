@@ -1,9 +1,9 @@
 ﻿name: Publish do pacote de CLI
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - 'main'
+#  push:
+#    branches:
+#      - 'main'
   pull_request:
     branches:
       - '*'
