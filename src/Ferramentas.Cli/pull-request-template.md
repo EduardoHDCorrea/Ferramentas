@@ -1,30 +1,42 @@
-## Qual estado (RS/PR/Ambos) é afetado com este PR?
+## Estados afetados:
 
 {{EstadoAfetado}}
 
-## Quais comportamentos foram criados, alterados ou corrigidos? 
+## Comportamentos introduzidos, alterados, ou removidos: 
+
+> Descrição de comportamentos introduzidos, alterados, ou removidos. Por exemplo, a criação de um novo endpoint, a
+> alteração de um comportamento de um comando existente, ou a remoção de um serviço.
 
 {{Comportamentos}}
 
-## Quais projetos foram criados, alterados ou corrigidos?
-
-{{Projetos}}
-## Existe alguma configuração para habilitar a opção? 
+## Configuração para habilitar a opção:
 
 {{ConfiguracaoParaHabilitarOpcao}}
 
-## Qual o endpoint foi afetado?
+## Endpoints afetados:
+
+> Lista de endpoints afetados pelo PR. Por exemplo, `/NotasDeServico`, `/Usuarios`, ou `/Organizacoes`.
 
 {{Endpoint}}
 
-## Descreva o procedimento de teste realizado antes de fazer o post da tarefa:
+## Procedimento de teste realizado:
 
 {{ProcedimentoDeTestes}}
 
-## Depende de outro PR? Se sim, qual?
+## Depende do Pull Request:
 
 {{DependeDeOutroPR}}
 
-## Precisa gerar uma nova versão de pacote? Se sim, qual pacote?
+## Projetos alterados:
+
+> - Alterações: Número de arquivos alterados por commit no projeto.
+> - Projeto: Nome do projeto alterado.
+> - Tipo: Tipo de projeto alterado (Fonte, Testes, Pacote).
+
+{{Projetos}}
+
+## Pacotes alterados:
+
+> Projetos versionados que foram alterados, portanto, podem não ser pacotes que precisam ser gerados e publicados.
 
 {{GerarNovaVersaoPacote}}
