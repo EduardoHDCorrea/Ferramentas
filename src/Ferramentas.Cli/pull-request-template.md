@@ -1,30 +1,31 @@
-## Qual estado (RS/PR/Ambos) é afetado com este PR?
+## Estados afetados:
 
 {{EstadoAfetado}}
 
-## Quais comportamentos foram criados, alterados ou corrigidos? 
+## Comportamentos introduzidos, alterados, ou removidos: 
 
 {{Comportamentos}}
 
-## Quais projetos foram criados, alterados ou corrigidos?
+## Projetos alterados:
 
 {{Projetos}}
-## Existe alguma configuração para habilitar a opção? 
+
+## Configuração para habilitar a opção:
 
 {{ConfiguracaoParaHabilitarOpcao}}
 
-## Qual o endpoint foi afetado?
+## Endpoints afetados:
 
 {{Endpoint}}
 
-## Descreva o procedimento de teste realizado antes de fazer o post da tarefa:
+## Procedimento de teste realizado:
 
 {{ProcedimentoDeTestes}}
 
-## Depende de outro PR? Se sim, qual?
+## Depende do Pull Request:
 
 {{DependeDeOutroPR}}
 
-## Precisa gerar uma nova versão de pacote? Se sim, qual pacote?
+## Pacotes alterados:
 
 {{GerarNovaVersaoPacote}}
