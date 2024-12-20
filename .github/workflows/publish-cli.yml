@@ -1,9 +1,6 @@
 ﻿name: Publish do pacote de CLI
 on:
   workflow_dispatch:
-#  push:
-#    branches:
-#      - 'main'
   pull_request:
     branches:
       - '*'
@@ -12,7 +9,7 @@ env:
   DOTNET_VERSION: '8.x'
   BUILD_CONFIGURATION: 'Release'
   DIRETORIO_NUGET: ${{ github.workspace }}/nuget
-  SOURCE_NUGET: https://nuget.pkg.github.com/${{ github.repository }}
+  SOURCE_NUGET: https://api.nuget.org/v3/index.json
 
 jobs:
   build:
@@ -66,12 +63,9 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Adicionar credenciais no nuget.config para publicação
-        run: dotnet nuget add source --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ github.actor }}/index.json"
-
       - name: Publicar o pacote
         shell: pwsh
         run: |
           foreach($file in (Get-ChildItem "${{ env.DIRETORIO_NUGET }}" -Recurse -Include *.nupkg)) {
-              dotnet nuget push $file --api-key "${{ secrets.GITHUB_TOKEN }}" --source "github"  --skip-duplicate
+              dotnet nuget push $file --api-key "${{ secrets.NUGET_API_KEY }}" --source "${{ env.SOURCE_NUGET }}  --skip-duplicate
           }
