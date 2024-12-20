@@ -134,6 +134,9 @@ internal sealed class ResumirPrComando : Command<ResumirPrComando.Parâmetros>
         foreach (var endpoint in endpointsAfetadosLista)
             endpointsAfetados.AppendLine($"- `/{endpoint}`");
 
+        if (endpointsAfetadosLista.Count == 0)
+            endpointsAfetados.AppendLine("Nenhum.");
+
         var testesAutomatizadosComSucesso = AnsiConsole.Prompt(
             new SelectionPrompt<bool>()
                 .Title("[blue bold]Os testes automatizados foram executados com sucesso?[/]")
@@ -319,16 +322,16 @@ internal sealed class ResumirPrComando : Command<ResumirPrComando.Parâmetros>
                         if (conteúdoDoArquivo.Contains("<Version>"))
                             detalhesDoProjeto.TipoDoProjeto = TipoDoProjeto.Pacote;
                     }
-                    catch (Exception e)
+                    catch
                     {
-                        // nuh uh
+                        // Ignorada
                     }
 
                     projetosAlterados.Add(detalhesDoProjeto);
                 }
                 catch
                 {
-                    // ignorada
+                    // Ignorada
                 }
         }
 
