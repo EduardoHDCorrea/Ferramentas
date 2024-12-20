@@ -67,5 +67,5 @@ jobs:
         shell: pwsh
         run: |
           foreach($file in (Get-ChildItem "${{ env.DIRETORIO_NUGET }}" -Recurse -Include *.nupkg)) {
-              dotnet nuget push $file --api-key "${{ secrets.NUGET_API_KEY }}" --source "${{ env.SOURCE_NUGET }}  --skip-duplicate
+              dotnet nuget push $file --api-key "${{ secrets.NUGET_API_KEY }}" --source "${{ env.SOURCE_NUGET }}"  --skip-duplicate
           }
