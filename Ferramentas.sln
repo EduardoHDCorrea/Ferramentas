@@ -4,6 +4,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BB7EB14C-37D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ferramentas.Cli", "src\Ferramentas.Cli\Ferramentas.Cli.csproj", "{C489A5F8-2375-4D86-B622-86F8CF675E05}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ferramentas.Desktop", "src\Ferramentas.Desktop\Ferramentas.Desktop.csproj", "{C7137DE8-ACAB-48B6-AF06-93825BA20207}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -11,11 +13,16 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C489A5F8-2375-4D86-B622-86F8CF675E05} = {BB7EB14C-37D7-4E35-87ED-BAF1FC461D06}
+		{C7137DE8-ACAB-48B6-AF06-93825BA20207} = {BB7EB14C-37D7-4E35-87ED-BAF1FC461D06}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{C489A5F8-2375-4D86-B622-86F8CF675E05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C489A5F8-2375-4D86-B622-86F8CF675E05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C489A5F8-2375-4D86-B622-86F8CF675E05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C489A5F8-2375-4D86-B622-86F8CF675E05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7137DE8-ACAB-48B6-AF06-93825BA20207}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7137DE8-ACAB-48B6-AF06-93825BA20207}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7137DE8-ACAB-48B6-AF06-93825BA20207}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7137DE8-ACAB-48B6-AF06-93825BA20207}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

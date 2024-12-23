@@ -1,0 +1,36 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="Panel">
+        <Setter Property="Background" Value="#2b2d30" />
+    </Style>
+
+    <Style Selector="Window">
+        <Setter Property="Background" Value="#1b1d20" />
+    </Style>
+
+    <Style Selector="TextBlock">
+        <Setter Property="Foreground" Value="#CFDCEC" />
+    </Style>
+    <Style Selector="TextBlock.H1">
+        <Setter Property="Foreground" Value="#CFDCEC" />
+        <Setter Property="FontWeight" Value="Bold"></Setter>
+    </Style>
+    <Style Selector="TextBox">
+        <Setter Property="Foreground" Value="#CFDCEC" />
+    </Style>
+    <Style Selector="RadioButton">
+        <Setter Property="Foreground" Value="#CFDCEC" />
+    </Style>
+    <Style Selector="CheckBox">
+        <Setter Property="Foreground" Value="#CFDCEC" />
+    </Style>
+    <Style Selector="ComboBox">
+        <Setter Property="Foreground" Value="#CFDCEC" />
+    </Style>
+</Styles>
