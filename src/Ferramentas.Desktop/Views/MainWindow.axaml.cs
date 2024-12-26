@@ -1,6 +1,6 @@
 using SukiUI.Controls;
 
-namespace Ferramentas.Desktop;
+namespace Ferramentas.Desktop.Views;
 
 public partial class MainWindow : SukiWindow
 {

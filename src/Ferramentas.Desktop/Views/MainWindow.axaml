@@ -1,0 +1,50 @@
+<sukiUi:SukiWindow xmlns="https://github.com/avaloniaui"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:sukiUi="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+                   xmlns:vm="using:Ferramentas.Desktop.ViewModels"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                   xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+                   x:Class="Ferramentas.Desktop.Views.MainWindow"
+                   x:DataType="vm:MainWindowViewModel"
+                   Icon="/Assets/avalonia-logo.ico"
+                   BackgroundStyle="Bubble"
+                   Title="Ferramentas.Desktop">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <sukiUi:SukiSideMenu>
+        <sukiUi:SukiSideMenu.Items>
+            <sukiUi:SukiSideMenuItem Header="Resumir PR">
+                <sukiUi:SukiSideMenuItem.Icon>
+                    <materialIcons:MaterialIcon Kind="BookAccount" />
+                </sukiUi:SukiSideMenuItem.Icon>
+                <sukiUi:SukiSideMenuItem.PageContent>
+                    <sukiUi:GlassCard Margin="6">
+                        <ScrollViewer>
+                            <ItemsRepeater ItemsSource="{Binding Questões}">
+                                <ItemsRepeater.ItemTemplate>
+                                    <DataTemplate>
+                                        <sukiUi:GlassCard Margin="0, 4">
+                                            <sukiUi:GroupBox Header="{Binding Pergunta}">
+                                                <StackPanel>
+                                                    <TextBlock TextWrapping="Wrap" FontSize="12"
+                                                               Text="{Binding Descrição}" />
+                                                    <TextBox Text="{Binding Resposta}" />
+                                                </StackPanel>
+                                            </sukiUi:GroupBox>
+                                        </sukiUi:GlassCard>
+                                    </DataTemplate>
+                                </ItemsRepeater.ItemTemplate>
+                            </ItemsRepeater>
+                        </ScrollViewer>
+                    </sukiUi:GlassCard>
+                </sukiUi:SukiSideMenuItem.PageContent>
+            </sukiUi:SukiSideMenuItem>
+        </sukiUi:SukiSideMenu.Items>
+    </sukiUi:SukiSideMenu>
+
+</sukiUi:SukiWindow>
