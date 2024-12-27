@@ -1,14 +1,26 @@
 [
   {
+    "Pergunta": "Estado(s) afetado(s) pelas alterações:",
+    "Descrição": "Estado, ou estados, que são afetados pelas alterações deste PR.",
+    "Ordem": 1,
+    "Tipo": "EscolhaÚnica",
+    "Resposta": "RS",
+    "Opções": [
+      "RS",
+      "PR",
+      "Ambos"
+    ]
+  },
+  {
     "Pergunta": "Comportamentos introduzidos, alterados, ou removidos:",
     "Descrição": "Descrição de comportamentos introduzidos, alterados, ou removidos. Por exemplo, a criação de um novo endpoint, alteração de um comportamento de um comando existente, ou a remoção de um serviço.",
-    "Ordem": 1,
-    "Tipo": "Tópicos"
+    "Ordem": 2,
+    "Tipo": "Texto"
   },
   {
     "Pergunta": "Pergunta de exemplo 2",
     "Descrição": "Pergunta de exemplo para teste.",
-    "Ordem": 2,
+    "Ordem": 3,
     "Tipo": "Texto"
   }
 ]

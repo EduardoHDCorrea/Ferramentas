@@ -6,9 +6,10 @@ namespace Ferramentas.Desktop.Models;
 public class QuestãoDoPullRequest : SukiObservableObject
 {
     private string descrição;
+    private string[] opções = [];
     private int ordem;
     private string pergunta;
-    private string resposta;
+    private object resposta;
     private TipoDaQuestão tipoDaQuestão;
 
     public string Pergunta
@@ -17,7 +18,7 @@ public class QuestãoDoPullRequest : SukiObservableObject
         set => SetAndRaise(ref pergunta, value);
     }
 
-    public string Resposta
+    public object Resposta
     {
         get => resposta;
         set => SetAndRaise(ref resposta, value);
@@ -39,5 +40,11 @@ public class QuestãoDoPullRequest : SukiObservableObject
     {
         get => descrição;
         set => SetAndRaise(ref descrição, value);
+    }
+
+    public string[] Opções
+    {
+        get => opções;
+        set => SetAndRaise(ref opções, value);
     }
 }

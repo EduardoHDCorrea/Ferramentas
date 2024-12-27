@@ -6,19 +6,35 @@
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+                   xmlns:models="clr-namespace:Ferramentas.Desktop.Models"
+                   xmlns:suki="https://github.com/kikipoulet/SukiUI"
                    x:Class="Ferramentas.Desktop.Views.MainWindow"
                    x:DataType="vm:MainWindowViewModel"
                    Icon="/Assets/avalonia-logo.ico"
-                   BackgroundStyle="Bubble"
+                   BackgroundStyle="Flat"
                    Title="Ferramentas.Desktop">
-
     <Design.DataContext>
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
+    <sukiUi:SukiWindow.Resources>
+        <DataTemplate x:Key="TextoTemplate" x:DataType="models:QuestãoDoPullRequest">
+            <TextBox Margin="4" Text="{Binding Resposta}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="EscolhaÚnicaTemplate" x:DataType="models:QuestãoDoPullRequest">
+            <ComboBox Margin="4" ItemsSource="{Binding Opções}" SelectedItem="{Binding Resposta}" />
+        </DataTemplate>
+
+        <models:TipoDaQuestãoTemplateSelector
+            x:Key="TipoDaQuestãoTemplateSelector"
+            TextoTemplate="{StaticResource TextoTemplate}"
+            EscolhaÚnicaTemplate="{StaticResource EscolhaÚnicaTemplate}" />
+    </sukiUi:SukiWindow.Resources>
+
     <sukiUi:SukiSideMenu>
         <sukiUi:SukiSideMenu.Items>
-            <sukiUi:SukiSideMenuItem Header="Resumir PR">
+            <sukiUi:SukiSideMenuItem Header="Resumir PR" Classes="Compact">
                 <sukiUi:SukiSideMenuItem.Icon>
                     <materialIcons:MaterialIcon Kind="BookAccount" />
                 </sukiUi:SukiSideMenuItem.Icon>
@@ -33,7 +49,9 @@
                                                 <StackPanel>
                                                     <TextBlock TextWrapping="Wrap" FontSize="12"
                                                                Text="{Binding Descrição}" />
-                                                    <TextBox Text="{Binding Resposta}" />
+                                                    <ContentControl
+                                                        Content="{Binding}"
+                                                        ContentTemplate="{StaticResource TipoDaQuestãoTemplateSelector}" />
                                                 </StackPanel>
                                             </sukiUi:GroupBox>
                                         </sukiUi:GlassCard>
@@ -42,6 +60,46 @@
                             </ItemsRepeater>
                         </ScrollViewer>
                     </sukiUi:GlassCard>
+                </sukiUi:SukiSideMenuItem.PageContent>
+            </sukiUi:SukiSideMenuItem>
+            <sukiUi:SukiSideMenuItem Header="Executor de Testes" Classes="Compact">
+                <sukiUi:SukiSideMenuItem.Icon>
+                    <materialIcons:MaterialIcon Kind="BugCheck" />
+                </sukiUi:SukiSideMenuItem.Icon>
+                <sukiUi:SukiSideMenuItem.PageContent>
+                    <ScrollViewer VerticalScrollBarVisibility="Hidden">
+                        <WrapPanel Margin="15"
+                                   suki:WrapPanelExtensions.AnimatedScroll="True"
+                                   Orientation="Horizontal">
+                            <Grid Margin="15">
+                                <suki:GlassCard Width="300" Margin="0,0,0,25">
+                                    <StackPanel>
+                                        <TextBlock FontSize="16"
+                                                   FontWeight="DemiBold"
+                                                   Text="Progresso dos Testes" />
+                                        <Viewbox Width="175"
+                                                 Height="175"
+                                                 Margin="0,0,0,5"
+                                                 HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center">
+                                            <suki:WaveProgress Value="50" />
+                                        </Viewbox>
+                                    </StackPanel>
+                                </suki:GlassCard>
+                                <Button Name="BotãoParaIniciarTestes"
+                                        Width="160"
+                                        Height="40"
+                                        IsEnabled="False"
+                                        Margin="0,0,0,7"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Bottom"
+                                        suki:ButtonExtensions.ShowProgress="False"
+                                        Classes="Flat Rounded"
+                                        FontWeight="DemiBold"
+                                        Content="Iniciar Testes" />
+                            </Grid>
+                        </WrapPanel>
+                    </ScrollViewer>
                 </sukiUi:SukiSideMenuItem.PageContent>
             </sukiUi:SukiSideMenuItem>
         </sukiUi:SukiSideMenu.Items>

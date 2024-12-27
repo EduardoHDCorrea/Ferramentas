@@ -15,10 +15,8 @@ public class ModeloDoMarkdown : SukiObservableObject
         Questões = [];
         var conteúdoJson = File.ReadAllText(arquivoJson);
         var seções = JsonConvert.DeserializeObject<List<SeçãoDaQuestãoJson>>(conteúdoJson);
-        if (seções is null)
-            return;
 
-        seções.ForEach(
+        seções?.ForEach(
             x => Questões.Add(
                 new QuestãoDoPullRequest
                 {
@@ -26,7 +24,8 @@ public class ModeloDoMarkdown : SukiObservableObject
                     Resposta = x.Resposta ?? "",
                     Descrição = x.Descrição,
                     Ordem = x.Ordem,
-                    TipoDaQuestão = x.Tipo
+                    TipoDaQuestão = x.Tipo,
+                    Opções = x.Opções
                 }
             )
         );
@@ -37,9 +36,10 @@ public class ModeloDoMarkdown : SukiObservableObject
     public class SeçãoDaQuestãoJson
     {
         public string Pergunta { get; set; }
-        public string? Resposta { get; set; }
+        public object? Resposta { get; set; }
         public string Descrição { get; set; }
         public int Ordem { get; set; }
+        public string[] Opções { get; set; } = [];
 
         [JsonConverter(typeof(StringEnumConverter))]
         public TipoDaQuestão Tipo { get; set; }

@@ -4,7 +4,7 @@
              xmlns:local="using:Ferramentas.Desktop"
              xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             RequestedThemeVariant="Default">
+             RequestedThemeVariant="Dark">
     <Application.DataTemplates>
         <local:ViewLocator />
     </Application.DataTemplates>
