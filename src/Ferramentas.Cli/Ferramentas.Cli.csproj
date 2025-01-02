@@ -14,6 +14,7 @@
         <Authors>EduardoHDCorrea</Authors>
         <Description>Ferramenta de CLI para facilitar alguns trabalhos repetitivos no setor.</Description>
         <PackageOutputPath>./nupkg</PackageOutputPath>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -25,6 +26,7 @@
     
     <ItemGroup>
         <None Include="pull-request-template.md" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always"/>
+        <None Include="README.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
 
 </Project>
