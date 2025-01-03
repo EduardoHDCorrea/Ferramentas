@@ -1,4 +1,5 @@
-﻿using Ferramentas.Cli.Domínio.ObterCaminhoRelativo;
+﻿using Ferramentas.Cli.Domínio.CriarComandosCrudBase;
+using Ferramentas.Cli.Domínio.ObterCaminhoRelativo;
 using Ferramentas.Cli.Domínio.ResumirPr;
 using Spectre.Console.Cli;
 
@@ -28,6 +29,10 @@ internal static class Program
                     .WithDescription("Obtém o caminho relativo entre dois diretórios.")
                     .WithExample("caminho-relativo", @"D:\Temp\core", @"D:\Temp\Output")
                     .WithAlias("cr");
+                x.AddCommand<CriarComandosCrudBaseComando>("criar-comandos-crud-base")
+                    .WithDescription("Cria comandos CRUD base para uma entidade no diretório atual.")
+                    .WithExample("criar-comandos-crud-base", "NomeDaEntidade")
+                    .WithAlias("ccb");
             }
         );
         app.Run(args);

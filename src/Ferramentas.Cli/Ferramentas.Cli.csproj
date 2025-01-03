@@ -10,11 +10,12 @@
         <LicenseUrl>https://opensource.org/licenses/MIT</LicenseUrl>
         <RepositoryUrl>https://github.com/EduardoHDCorrea/Ferramentas</RepositoryUrl>
         <ToolCommandName>skyinfo</ToolCommandName>
-        <Version>1.2.0</Version>
+        <Version>1.4.0</Version>
         <Authors>EduardoHDCorrea</Authors>
         <Description>Ferramenta de CLI para facilitar alguns trabalhos repetitivos no setor.</Description>
-        <PackageOutputPath>./nupkg</PackageOutputPath>
+        <PackageOutputPath>C:\Sky\TerraMedia\Pacotes</PackageOutputPath>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <ItemGroup>
@@ -25,8 +26,10 @@
     </ItemGroup>
     
     <ItemGroup>
-        <None Include="pull-request-template.md" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always"/>
         <None Include="README.md" Pack="true" PackagePath="\"/>
+        <None Include="Templates\**">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+        </None>
     </ItemGroup>
-
 </Project>

@@ -179,7 +179,7 @@ internal sealed class ResumirPrComando : Command<ResumirPrComando.Parâmetros>
         }
 
         var caminhoDoArquivoTemplate = Path.Combine(
-            AppDomain.CurrentDomain.BaseDirectory,
+            Diretórios.DiretórioDeTemplates,
             "pull-request-template.md"
         );
 
