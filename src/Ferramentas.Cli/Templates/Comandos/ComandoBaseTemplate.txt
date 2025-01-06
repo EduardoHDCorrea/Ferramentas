@@ -1,11 +1,11 @@
 using AutoMapper;
 using SkyInfo.Infra.Bus.Abstracoes;
-{{UsingsDaEntidade}}
+{{{UsingsDaEntidade}}}
 
-namespace {{NamespaceDoProjeto}};
+namespace  {{{NamespaceDoProjeto}}};
 
-[AutoMap(typeof({{NomeDaEntidade}}), ReverseMap = true)]
-public class {{Prefixo}}{{NomeDaEntidade}}{{Sufixo}}<TRetorno> : Comando<TRetorno>
+[AutoMap(typeof( {{{NomeDaEntidade}}} ), ReverseMap = true)]
+public class  {{{Prefixo}}}{{{NomeDaEntidade}}}{{{Sufixo}}} <TRetorno> : Comando<TRetorno>
 {
-    {{Propriedades}}
+{{{Propriedades}}}
 }

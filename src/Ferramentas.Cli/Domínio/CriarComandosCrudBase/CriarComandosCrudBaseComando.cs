@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using Ferramentas.Cli.Infraestrutura;
+using Ferramentas.Cli.Infraestrutura.ServiçosEstáticos;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -36,9 +37,18 @@ public class CriarComandosCrudBaseComando : Command<CriarComandosCrudBaseComando
         "ComandoNãoBaseComIdTemplate.txt"
     );
 
+    private static string ObterRetornoDoPrefixo(string prefixo) =>
+        prefixo switch
+        {
+            "Adicionar" => "IId",
+            "Atualizar" => "IAtualizarComandoRetorno",
+            "Remover"   => "IRemoverComandoRetorno",
+            _           => string.Empty
+        };
+
     public override int Execute(CommandContext context, Parâmetros parâmetros)
     {
-        var diretórioDeExecução = new DirectoryInfo(Diretórios.DiretórioDeExecução);
+        var diretórioDeExecução = new DirectoryInfo(parâmetros.Diretório);
         var nomeDaEntidade = parâmetros.NomeDaEntidade;
         AnsiConsole.MarkupLine($"Criando comandos CRUD para a entidade [bold]{nomeDaEntidade}[/]");
 
@@ -80,29 +90,31 @@ public class CriarComandosCrudBaseComando : Command<CriarComandosCrudBaseComando
             .Select(u => $"using {u}")
             .ToArray();
 
-        var propriedadesDaEntidade = File
-            .ReadAllLines(arquivoDaEntidade.FullName)
-            .Where(l => l.Contains("public"))
-            .Select(l => l.Split(" ")[2])
+        var conteúdoDaEntidade = File.ReadAllLines(arquivoDaEntidade.FullName);
+        var propriedadesDaEntidade = conteúdoDaEntidade
+            .Where(l => l.Contains("public") && l.Contains("get; set;"))
             .ToArray();
 
         var namespaceDosComandos = $"{namespaceDoProjeto}.ComandosManipuladores.Comandos;";
+        var namespaceDaEntidade = $"{namespaceDoProjeto}.Entidades;";
+
+        Variáveis.DefinirVariável("NamespaceDoProjeto", namespaceDosComandos);
+        Variáveis.DefinirVariável("NamespaceDaEntidade", namespaceDaEntidade);
+        Variáveis.DefinirVariável("UsingsDaEntidade", string.Join(Environment.NewLine, usingsDaEntidade));
+        Variáveis.DefinirVariável("NomeDaEntidade", nomeDaEntidade);
+        Variáveis.DefinirVariável("Propriedades", string.Join(Environment.NewLine, propriedadesDaEntidade));
 
         CriarComandoDaEntidade(
             nomeDaEntidade,
-            namespaceDosComandos,
-            usingsDaEntidade,
-            propriedadesDaEntidade,
             PrefixoBase,
             diretórioDeComandos.FullName
         );
         foreach (var prefixo in Prefixos)
         {
+            Variáveis.DefinirVariável("RetornoDoComando", ObterRetornoDoPrefixo(prefixo));
+
             CriarComandoDaEntidade(
                 nomeDaEntidade,
-                namespaceDosComandos,
-                usingsDaEntidade,
-                propriedadesDaEntidade,
                 prefixo,
                 diretórioDeComandos.FullName
             );
@@ -114,9 +126,6 @@ public class CriarComandosCrudBaseComando : Command<CriarComandosCrudBaseComando
     // TODO: Corrigir geração dos comandos
     private static void CriarComandoDaEntidade(
         string nomeDaEntidade,
-        string namespaceDosComandos,
-        string[] usingsDaEntidade,
-        string[] propriedadesDaEntidade,
         string prefixo,
         string diretórioDeComandos
     )
@@ -129,18 +138,19 @@ public class CriarComandosCrudBaseComando : Command<CriarComandosCrudBaseComando
             _               => File.ReadAllText(CaminhoDaTemplateSemId)
         };
 
-        var comando = template
-            .Replace("{{Namespace}}", namespaceDosComandos)
-            .Replace("{{Usings}}", string.Join(Environment.NewLine, usingsDaEntidade))
-            .Replace("{{NomeDaEntidade}}", nomeDaEntidade)
-            .Replace("{{Propriedades}}", string.Join(Environment.NewLine, propriedadesDaEntidade));
+        Variáveis.DefinirVariável("Prefixo", prefixo);
+        Variáveis.DefinirVariável("Sufixo", ObterSufixoDoComando(ehBase));
+
+        var nomeDoComando = $"{prefixo}{nomeDaEntidade}{ObterSufixoDoComando(ehBase)}";
+        if (ehBase)
+            Variáveis.DefinirVariável("ComandoBase", nomeDoComando);
 
         var caminhoDoComando = Path.Combine(
             diretórioDeComandos,
-            $"{prefixo}{nomeDaEntidade}{ObterSufixoDoComando(ehBase)}.cs"
+            $"{nomeDoComando}.cs"
         );
 
-        File.WriteAllText(caminhoDoComando, comando);
+        File.WriteAllText(caminhoDoComando, template.SubstituirVariáveisNoTexto());
     }
 
     private static string ObterSufixoDoComando(bool ehBase = false) =>
@@ -151,5 +161,9 @@ public class CriarComandosCrudBaseComando : Command<CriarComandosCrudBaseComando
         [CommandArgument(0, "<NOME_DA_ENTIDADE>")]
         [Description("Nome da entidade para a qual os comandos CRUD serão criados.")]
         public required string NomeDaEntidade { get; init; }
+
+        [CommandOption("-d|--diretorio")]
+        [Description("Diretório do projeto.")]
+        public string Diretório { get; init; } = Diretórios.DiretórioDeExecução;
     }
 }

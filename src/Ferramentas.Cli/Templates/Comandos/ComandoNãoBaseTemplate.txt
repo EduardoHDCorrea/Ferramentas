@@ -1,7 +1,8 @@
 using AutoMapper;
 using SkyInfo.Infra.Bus.Abstracoes;
+using  {{{NamespaceDaEntidade}}};
 
-namespace {{NamespaceDoProjeto}};
+namespace  {{{NamespaceDoProjeto}}};
 
-[AutoMap(typeof({{NomeDaEntidade}}), ReverseMap = true)]
-public class {{Prefixo}}{{NomeDaEntidade}}Comando{{Sufixo}} : {{ComandoBase}}<{{RetornoDoComando}}>;
+[AutoMap(typeof( {{{NomeDaEntidade}}} ), ReverseMap = true)]
+public class  {{{Prefixo}}}{{{NomeDaEntidade}}}{{{Sufixo}}}  :  {{{ComandoBase}}} < {{{RetornoDoComando}}} >;

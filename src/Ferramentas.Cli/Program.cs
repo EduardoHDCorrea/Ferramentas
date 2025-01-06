@@ -35,6 +35,7 @@ internal static class Program
                     .WithAlias("ccb");
             }
         );
+
         app.Run(args);
     }
 }

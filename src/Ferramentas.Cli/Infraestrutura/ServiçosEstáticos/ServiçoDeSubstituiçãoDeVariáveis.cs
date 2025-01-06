@@ -6,18 +6,22 @@ public static class ServiçoDeSubstituiçãoDeVariáveis
 {
     public static string SubstituirVariáveisNoTexto(this string texto) =>
         SubstituirTexto(
-            texto,
-            Delimitadores.VariávelParaObterSemÁspasInício,
-            Delimitadores.VariávelParaObterSemÁspasFinal,
-            true
-        ).SubstituirTexto(
-            Delimitadores.VariávelParaObterInício,
-            Delimitadores.VariávelParaObterFinal,
-            false
-        );
+                texto,
+                Delimitadores.VariávelParaObterSemÁspasInício,
+                Delimitadores.VariávelParaObterSemÁspasFinal,
+                true
+            )
+            .SubstituirTexto(
+                Delimitadores.VariávelParaObterInício,
+                Delimitadores.VariávelParaObterFinal,
+                false
+            );
 
     private static string SubstituirTexto(
-        this string texto, string delimitadorInicio, string delimitadorFim, bool removerAspas
+        this string texto,
+        string delimitadorInicio,
+        string delimitadorFim,
+        bool removerAspas
     )
     {
         var resultado = texto;
@@ -31,8 +35,8 @@ public static class ServiçoDeSubstituiçãoDeVariáveis
             if (!Variáveis.VariáveisDefinidas.TryGetValue(variavel, out var valor))
                 throw new InvalidOperationException($"Variável '{variavel}' não definida.");
 
-            var inicio = resultado.IndexOf(delimitadorInicio, StringComparison.CurrentCulture);
-            var fim = resultado.IndexOf(delimitadorFim, inicio, StringComparison.CurrentCulture);
+            var inicio = resultado.IndexOf(delimitadorInicio, StringComparison.InvariantCulture);
+            var fim = resultado.IndexOf(delimitadorFim, inicio, StringComparison.InvariantCulture);
             fim = fim == -1 ? resultado.Length : fim + delimitadorFim.Length;
 
             if (removerAspas)
@@ -41,28 +45,45 @@ public static class ServiçoDeSubstituiçãoDeVariáveis
                 fim++;
             }
 
-            resultado = resultado.Replace(resultado[inicio..fim], valor, StringComparison.CurrentCulture);
+            resultado = resultado.Replace(resultado[inicio..fim], valor, StringComparison.InvariantCulture);
         }
 
         return resultado;
     }
 
-    public static void RemoverAtribuiçõesDeVariáveis(string textoComVariavel, string textoOriginal,
-        out string textoAtualizado, out string valoresExtraidos)
+    public static void RemoverAtribuiçõesDeVariáveis(
+        string textoComVariavel,
+        string textoOriginal,
+        out string textoAtualizado,
+        out string valoresExtraidos
+    )
     {
-        TratarAtribuiçõesParaRemoção(textoComVariavel, textoOriginal,
+        TratarAtribuiçõesParaRemoção(
+            textoComVariavel,
+            textoOriginal,
             Delimitadores.VariávelParaArmazenarSemÁspasInício,
             Delimitadores.VariávelParaArmazenarSemÁspasFinal,
-            out var parcialTexto, out var parcialValores);
+            out var parcialTexto,
+            out var parcialValores
+        );
 
-        TratarAtribuiçõesParaRemoção(parcialTexto, parcialValores,
-            Delimitadores.VariávelParaArmazenarInicio, Delimitadores.VariávelParaArmazenarFinal,
-            out textoAtualizado, out valoresExtraidos);
+        TratarAtribuiçõesParaRemoção(
+            parcialTexto,
+            parcialValores,
+            Delimitadores.VariávelParaArmazenarInicio,
+            Delimitadores.VariávelParaArmazenarFinal,
+            out textoAtualizado,
+            out valoresExtraidos
+        );
     }
 
     private static void TratarAtribuiçõesParaRemoção(
-        string textoVariável, string textoValor, string delimitadorInicio, string delimitadorFim,
-        out string textoAtualizado, out string valoresAtualizados
+        string textoVariável,
+        string textoValor,
+        string delimitadorInicio,
+        string delimitadorFim,
+        out string textoAtualizado,
+        out string valoresAtualizados
     )
     {
         textoAtualizado = textoVariável;
@@ -74,7 +95,7 @@ public static class ServiçoDeSubstituiçãoDeVariáveis
             if (string.IsNullOrEmpty(variável))
                 break;
 
-            var inicio = textoAtualizado.IndexOf(delimitadorInicio, StringComparison.CurrentCulture);
+            var inicio = textoAtualizado.IndexOf(delimitadorInicio, StringComparison.InvariantCulture);
             if (inicio == -1)
                 throw new InvalidOperationException($"Delimitador '{delimitadorInicio}' não encontrado.");
 
@@ -91,13 +112,16 @@ public static class ServiçoDeSubstituiçãoDeVariáveis
             if (variável == Delimitadores.VariávelParaArmazenarIgnorada)
             {
                 textoAtualizado = textoAtualizado.SubstituirPrimeiraOcorrência(
-                    string.Concat(delimitadorInicio, variável, delimitadorFim), valor);
+                    string.Concat(delimitadorInicio, variável, delimitadorFim),
+                    valor
+                );
                 continue;
             }
 
             textoAtualizado = textoAtualizado.Replace(
                 string.Concat(delimitadorInicio, variável, delimitadorFim),
-                valor, StringComparison.CurrentCulture
+                valor,
+                StringComparison.InvariantCulture
             );
 
             Variáveis.DefinirVariável(variável, valor);
@@ -106,11 +130,11 @@ public static class ServiçoDeSubstituiçãoDeVariáveis
 
     private static string ExtrairTextoEntreDelimitadores(this string texto, string inicio, string fim)
     {
-        var posiçãoInicial = texto.IndexOf(inicio, StringComparison.CurrentCulture);
+        var posiçãoInicial = texto.IndexOf(inicio, StringComparison.InvariantCulture);
         if (posiçãoInicial == -1) return string.Empty;
 
         posiçãoInicial += inicio.Length;
-        var posiçãoFinal = texto.IndexOf(fim, posiçãoInicial, StringComparison.CurrentCulture);
+        var posiçãoFinal = texto.IndexOf(fim, posiçãoInicial, StringComparison.InvariantCulture);
         return posiçãoFinal == -1
             ? string.Empty
             : texto[posiçãoInicial..posiçãoFinal];
@@ -118,7 +142,7 @@ public static class ServiçoDeSubstituiçãoDeVariáveis
 
     private static string SubstituirPrimeiraOcorrência(this string texto, string busca, string substituição)
     {
-        var pos = texto.IndexOf(busca, StringComparison.CurrentCulture);
+        var pos = texto.IndexOf(busca, StringComparison.InvariantCulture);
         return pos == -1 ? texto : texto[..pos] + substituição + texto[(pos + busca.Length)..];
     }
 }
