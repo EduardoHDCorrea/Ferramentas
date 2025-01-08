@@ -123,7 +123,6 @@ public class CriarComandosCrudBaseComando : Command<CriarComandosCrudBaseComando
         return 0;
     }
 
-    // TODO: Corrigir geração dos comandos
     private static void CriarComandoDaEntidade(
         string nomeDaEntidade,
         string prefixo,
