@@ -1,4 +1,4 @@
-namespace Ferramentas.Cli.Infraestrutura;
+namespace Ferramentas.Domínio;
 
 public static class Diretórios
 {

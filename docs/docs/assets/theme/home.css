@@ -54,13 +54,13 @@
 	}
 }
 
-[data-md-color-scheme="fusiondoc-dark"] #fusiondoc-home-main::before {
-	background-image: url(../home/Hero-Dark.svg);
-}
+/*[data-md-color-scheme="fusiondoc-dark"] #fusiondoc-home-main::before {*/
+/*	background-image: url(../home/Hero-Dark.svg);*/
+/*}*/
 
-[data-md-color-scheme="fusiondoc-light"] #fusiondoc-home-main::before {
-	background-image: url(../home/Hero-Light.svg);
-}
+/*[data-md-color-scheme="fusiondoc-light"] #fusiondoc-home-main::before {*/
+/*	background-image: url(../home/Hero-Light.svg);*/
+/*}*/
 
 #fusiondoc-home-main-inner {
 	max-width: 50rem;

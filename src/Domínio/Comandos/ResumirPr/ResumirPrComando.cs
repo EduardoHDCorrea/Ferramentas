@@ -1,16 +1,23 @@
 using System.ComponentModel;
 using System.Text;
-using Ferramentas.Cli.Domínio.ResumirPr.Dtos;
-using Ferramentas.Cli.Infraestrutura;
-using Ferramentas.Cli.Infraestrutura.ServiçosEstáticos;
+using Ferramentas.Domínio.Comandos.ResumirPr.Dtos;
+using Ferramentas.Infraestrutura.ManipulaçãoDeTexto;
+using Ferramentas.Infraestrutura.Sistema;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TextCopy;
 
-namespace Ferramentas.Cli.Domínio.ResumirPr;
+namespace Ferramentas.Domínio.Comandos.ResumirPr;
 
-internal sealed class ResumirPrComando : Command<ResumirPrComando.Parâmetros>
+public sealed class ResumirPrComando : Command<ResumirPrComando.Parâmetros>, IComandoCli
 {
+    public static ICommandConfigurator InjetarComando(IConfigurator configurator) =>
+        configurator
+            .AddCommand<ResumirPrComando>("resumir-pr")
+            .WithDescription("Gera um resumo do PR com base nos commits da branch.")
+            .WithExample("resumir-pr", @"D:\Repositório\Projeto", "feature/PR-1234")
+            .WithAlias("rp");
+
     public override int Execute(CommandContext contexto, Parâmetros parâmetros)
     {
         var branch = parâmetros.Branch;

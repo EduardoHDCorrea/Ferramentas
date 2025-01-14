@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 
-namespace Ferramentas.Cli.Infraestrutura.ServiçosEstáticos;
+namespace Ferramentas.Infraestrutura.Sistema;
 
 public static class ServiçoDeExecuçãoDeComandosNoSistema
 {

@@ -33,7 +33,7 @@ jobs:
         run: dotnet build -c ${{ env.BUILD_CONFIGURATION }} --no-restore --no-incremental
 
       - name: Fazer pack do projeto
-        run: dotnet pack ./src/Ferramentas.Cli/Ferramentas.Cli.csproj -c ${{ env.BUILD_CONFIGURATION }} -o ${{ env.DIRETORIO_NUGET }} --no-restore
+        run: dotnet pack ./src/Serviço/Serviço.csproj -c ${{ env.BUILD_CONFIGURATION }} -o ${{ env.DIRETORIO_NUGET }} --no-restore
 
       - name: Publicar o artefato do pacote
         uses: actions/upload-artifact@v4

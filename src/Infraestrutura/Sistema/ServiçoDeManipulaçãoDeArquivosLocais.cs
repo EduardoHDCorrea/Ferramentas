@@ -1,4 +1,4 @@
-namespace Ferramentas.Cli.Infraestrutura.ServiçosEstáticos;
+namespace Ferramentas.Infraestrutura.Sistema;
 
 /// <summary>
 /// Serviço estático para manipulação de arquivos locais.
@@ -19,7 +19,8 @@ public static class ServiçoDeManipulaçãoDeArquivosLocais
                 AppDomain.CurrentDomain.BaseDirectory,
                 nomeDoArquivo,
                 SearchOption.AllDirectories
-            ).ToHashSet();
+            )
+            .ToHashSet();
 
         if (caminhoDoArquivo.Count == 0)
             throw new FileNotFoundException($"Não foi possível encontrar o arquivo '{nomeDoArquivo}'");

@@ -1,12 +1,11 @@
 using System.ComponentModel;
-using Ferramentas.Cli.Infraestrutura;
-using Ferramentas.Cli.Infraestrutura.ServiçosEstáticos;
+using Ferramentas.Infraestrutura.ManipulaçãoDeTexto;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace Ferramentas.Cli.Domínio.CriarComandosCrudBase;
+namespace Ferramentas.Domínio.Comandos.CriarComandosCrudBase;
 
-public class CriarComandosCrudBaseComando : Command<CriarComandosCrudBaseComando.Parâmetros>
+public class CriarComandosCrudBaseComando : Command<CriarComandosCrudBaseComando.Parâmetros>, IComandoCli
 {
     private const string PrefixoBase = "AdicionarAtualizar";
 
@@ -36,6 +35,13 @@ public class CriarComandosCrudBaseComando : Command<CriarComandosCrudBaseComando
         CaminhoDosComandosTemplate,
         "ComandoNãoBaseComIdTemplate.txt"
     );
+
+    public static ICommandConfigurator InjetarComando(IConfigurator configurator) =>
+        configurator
+            .AddCommand<CriarComandosCrudBaseComando>("criar-comandos-crud-base")
+            .WithDescription("Cria os comandos CRUD base para uma entidade.")
+            .WithExample("criar-comandos-crud-base", "Entidade")
+            .WithAlias("ccb");
 
     private static string ObterRetornoDoPrefixo(string prefixo) =>
         prefixo switch

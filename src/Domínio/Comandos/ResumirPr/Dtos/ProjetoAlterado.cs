@@ -1,4 +1,4 @@
-namespace Ferramentas.Cli.Domínio.ResumirPr.Dtos;
+namespace Ferramentas.Domínio.Comandos.ResumirPr.Dtos;
 
 public class ProjetoAlterado
 {

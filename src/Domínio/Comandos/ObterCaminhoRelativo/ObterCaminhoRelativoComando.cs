@@ -3,10 +3,16 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using TextCopy;
 
-namespace Ferramentas.Cli.Domínio.ObterCaminhoRelativo;
+namespace Ferramentas.Domínio.Comandos.ObterCaminhoRelativo;
 
-public class ObterCaminhoRelativoComando : Command<ObterCaminhoRelativoComando.Parâmetros>
+public class ObterCaminhoRelativoComando : Command<ObterCaminhoRelativoComando.Parâmetros>, IComandoCli
 {
+    public static ICommandConfigurator InjetarComando(IConfigurator configurator) =>
+        configurator.AddCommand<ObterCaminhoRelativoComando>("caminho-relativo")
+            .WithDescription("Obtém o caminho relativo entre dois diretórios.")
+            .WithExample("caminho-relativo", @"D:\Temp\core", @"D:\Temp\Output")
+            .WithAlias("cr");
+
     public override int Execute(CommandContext context, Parâmetros settings)
     {
         ClipboardService.SetText(Path.GetRelativePath(settings.Origem, settings.Destino));

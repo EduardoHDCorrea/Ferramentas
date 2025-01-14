@@ -2,34 +2,35 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net8.0</TargetFramework>
-        <LangVersion>latest</LangVersion>
+        <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
         <PackAsTool>true</PackAsTool>
         <LicenseUrl>https://opensource.org/licenses/MIT</LicenseUrl>
         <RepositoryUrl>https://github.com/EduardoHDCorrea/Ferramentas</RepositoryUrl>
         <ToolCommandName>skyinfo</ToolCommandName>
-        <Version>1.6.0</Version>
+        <Version>1.7.0</Version>
         <Authors>EduardoHDCorrea</Authors>
         <Description>Ferramenta de CLI para facilitar alguns trabalhos repetitivos no setor.</Description>
         <PackageOutputPath>C:\Sky\TerraMedia\Pacotes</PackageOutputPath>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <RootNamespace>Ferramentas.Serviço</RootNamespace>
+        <PackageId>Ferramentas.Cli</PackageId>
+        <Title>Ferramentas.Cli</Title>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Spectre.Console.Cli" Version="0.49.1" />
-      <PackageReference Include="System.Globalization" Version="4.3.0" />
-      <PackageReference Include="TextCopy" Version="6.2.1" />
-      <PackageReference Include="ToMarkdownTable" Version="0.2.0" />
-    </ItemGroup>
-    
-    <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="\"/>
-        <None Include="Templates\**">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-        </None>
     </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Domínio\Domínio.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Spectre.Console.Cli" Version="0.49.1"/>
+    </ItemGroup>
+
 </Project>

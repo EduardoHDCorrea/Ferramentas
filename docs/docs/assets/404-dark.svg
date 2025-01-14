@@ -9,8 +9,8 @@
 <path fill-rule="evenodd" clip-rule="evenodd" d="M17 10.1181V9.20711C17 8.75435 16.8201 8.32014 16.5 8C16.1799 7.67986 15.7456 7.5 15.2929 7.5H14.5V9C14.5 9.82843 15.1716 10.5 16 10.5C16.3842 10.5 16.7346 10.3556 17 10.1181Z" fill="#F5F1FF"/>
 <defs>
 <linearGradient id="paint0_linear_2921_120" x1="4.1625" y1="3.1875" x2="17.8125" y2="17.325" gradientUnits="userSpaceOnUse">
-<stop stop-color="#FF00AA"/>
-<stop offset="1" stop-color="#FFAA00"/>
+    <stop stop-color="#676dff"/>
+    <stop offset="1" stop-color="#ffb74b"/>
 </linearGradient>
 </defs>
 </svg>

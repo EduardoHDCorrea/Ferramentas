@@ -1,21 +1,65 @@
-using Ferramentas.Cli.Infraestrutura.Dtos;
+namespace Ferramentas.Infraestrutura.ManipulaçãoDeTexto;
 
-namespace Ferramentas.Cli.Infraestrutura.ServiçosEstáticos;
-
-public static class ServiçoDeSubstituiçãoDeVariáveis
+public static class Variáveis
 {
+    private const string DelimitadorParaArmazenarSemÁspasInício = "[[[";
+    private const string DelimitadorParaArmazenarSemÁspasFinal = "]]]";
+    private const string DelimitadorParaArmazenarIgnorada = "***";
+    private const string DelimitadorParaObterSemÁspasInício = "{{{";
+    private const string DelimitadorParaObterSemÁspasFinal = "}}}";
+    private const string DelimitadorParaObterInício = "{{";
+    private const string DelimitadorParaObterFinal = "}}";
+    private const string DelimitadorParaArmazenarInicio = "[[";
+    private const string DelimitadorParaArmazenarFinal = "]]";
+    public static readonly Dictionary<string, string> VariáveisDefinidas = new();
+
+    public static void DefinirVariável(string nomeDaVariável, string valorDaVariável)
+    {
+        if (!VariáveisDefinidas.TryAdd(nomeDaVariável, valorDaVariável))
+            VariáveisDefinidas[nomeDaVariável] = valorDaVariável;
+    }
+
+    public static string ObterVariável(string nomeDaVariável) =>
+        VariáveisDefinidas[nomeDaVariável];
+
     public static string SubstituirVariáveisNoTexto(this string texto) =>
         SubstituirTexto(
                 texto,
-                Delimitadores.VariávelParaObterSemÁspasInício,
-                Delimitadores.VariávelParaObterSemÁspasFinal,
+                DelimitadorParaObterSemÁspasInício,
+                DelimitadorParaObterSemÁspasFinal,
                 true
             )
             .SubstituirTexto(
-                Delimitadores.VariávelParaObterInício,
-                Delimitadores.VariávelParaObterFinal,
+                DelimitadorParaObterInício,
+                DelimitadorParaObterFinal,
                 false
             );
+
+    public static void RemoverAtribuiçõesDeVariáveis(
+        string textoComVariavel,
+        string textoOriginal,
+        out string textoAtualizado,
+        out string valoresExtraidos
+    )
+    {
+        TratarAtribuiçõesParaRemoção(
+            textoComVariavel,
+            textoOriginal,
+            DelimitadorParaArmazenarSemÁspasInício,
+            DelimitadorParaArmazenarSemÁspasFinal,
+            out var parcialTexto,
+            out var parcialValores
+        );
+
+        TratarAtribuiçõesParaRemoção(
+            parcialTexto,
+            parcialValores,
+            DelimitadorParaArmazenarInicio,
+            DelimitadorParaArmazenarFinal,
+            out textoAtualizado,
+            out valoresExtraidos
+        );
+    }
 
     private static string SubstituirTexto(
         this string texto,
@@ -32,7 +76,7 @@ public static class ServiçoDeSubstituiçãoDeVariáveis
             if (string.IsNullOrEmpty(variavel))
                 break;
 
-            if (!Variáveis.VariáveisDefinidas.TryGetValue(variavel, out var valor))
+            if (!VariáveisDefinidas.TryGetValue(variavel, out var valor))
                 throw new InvalidOperationException($"Variável '{variavel}' não definida.");
 
             var inicio = resultado.IndexOf(delimitadorInicio, StringComparison.InvariantCulture);
@@ -49,32 +93,6 @@ public static class ServiçoDeSubstituiçãoDeVariáveis
         }
 
         return resultado;
-    }
-
-    public static void RemoverAtribuiçõesDeVariáveis(
-        string textoComVariavel,
-        string textoOriginal,
-        out string textoAtualizado,
-        out string valoresExtraidos
-    )
-    {
-        TratarAtribuiçõesParaRemoção(
-            textoComVariavel,
-            textoOriginal,
-            Delimitadores.VariávelParaArmazenarSemÁspasInício,
-            Delimitadores.VariávelParaArmazenarSemÁspasFinal,
-            out var parcialTexto,
-            out var parcialValores
-        );
-
-        TratarAtribuiçõesParaRemoção(
-            parcialTexto,
-            parcialValores,
-            Delimitadores.VariávelParaArmazenarInicio,
-            Delimitadores.VariávelParaArmazenarFinal,
-            out textoAtualizado,
-            out valoresExtraidos
-        );
     }
 
     private static void TratarAtribuiçõesParaRemoção(
@@ -109,7 +127,7 @@ public static class ServiçoDeSubstituiçãoDeVariáveis
             fim = fim == -1 ? valoresAtualizados.Length : fim;
 
             var valor = valoresAtualizados[inicio..fim];
-            if (variável == Delimitadores.VariávelParaArmazenarIgnorada)
+            if (variável == DelimitadorParaArmazenarIgnorada)
             {
                 textoAtualizado = textoAtualizado.SubstituirPrimeiraOcorrência(
                     string.Concat(delimitadorInicio, variável, delimitadorFim),
@@ -124,7 +142,7 @@ public static class ServiçoDeSubstituiçãoDeVariáveis
                 StringComparison.InvariantCulture
             );
 
-            Variáveis.DefinirVariável(variável, valor);
+            DefinirVariável(variável, valor);
         }
     }
 
