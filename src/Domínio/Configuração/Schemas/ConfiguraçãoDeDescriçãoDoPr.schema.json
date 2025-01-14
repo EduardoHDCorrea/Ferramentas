@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "Seções": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Título": {
+            "type": "string"
+          },
+          "Tipo": {
+            "type": "string",
+            "enum": [
+              "SeleçãoÚnica",
+              "SeleçãoMúltipla",
+              "Texto"
+            ]
+          },
+          "Opções": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "Padrão": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "Título",
+          "Tipo",
+          "Opções",
+          "Padrão"
+        ]
+      }
+    }
+  },
+  "required": [
+    "Seções"
+  ]
+}

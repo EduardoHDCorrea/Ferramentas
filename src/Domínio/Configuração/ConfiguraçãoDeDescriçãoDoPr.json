@@ -1,0 +1,15 @@
+{
+  "$schema": "Schemas/ConfiguraçãoDeDescriçãoDoPr.schema.json",
+  "Seções": [
+    {
+      "Título": "Estados afetados",
+      "Tipo": "SeleçãoÚnica",
+      "Opções": [
+        "RS",
+        "PR",
+        "Ambos"
+      ],
+      "Padrão": "Ambos"
+    }
+  ]
+}

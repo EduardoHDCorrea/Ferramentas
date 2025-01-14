@@ -9,5 +9,12 @@ public static class Diretórios
         "Templates"
     );
 
+    public static DirectoryInfo DiretórioDeConfiguração => Directory.CreateDirectory(
+        Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            ".ferramentasCli"
+        )
+    );
+
     public static string DiretórioDeExecução => Directory.GetCurrentDirectory();
 }
