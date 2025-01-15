@@ -352,7 +352,7 @@ public sealed class ResumirPrComando : Command<ResumirPrComando.Parâmetros>, IC
     )
     {
         var comandoDeLogDoGit = $"git log {branch} --format=%H::%s";
-        var retornoDoComando = comandoDeLogDoGit.ExecutarComandoComRetorno(diretórioDoRepositório);
+        var retornoDoComando = comandoDeLogDoGit.ExecutarComandoEObterResultado(diretórioDoRepositório);
 
         var commits = new List<InformaçõesDoCommit>();
         foreach (var linha in retornoDoComando)
@@ -368,7 +368,7 @@ public sealed class ResumirPrComando : Command<ResumirPrComando.Parâmetros>, IC
     private static List<string> ObterArquivosAlteradosDoCommit(string hashDoCommit, string diretórioDoRepositório)
     {
         var comandoGitShow = $"git -c core.quotepath=false show --pretty=\"\" --name-only {hashDoCommit}";
-        var retorno = comandoGitShow.ExecutarComandoComRetorno(diretórioDoRepositório);
+        var retorno = comandoGitShow.ExecutarComandoEObterResultado(diretórioDoRepositório);
         return retorno;
     }
 

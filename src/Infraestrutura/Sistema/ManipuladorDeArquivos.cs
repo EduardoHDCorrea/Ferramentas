@@ -3,7 +3,7 @@ namespace Ferramentas.Infraestrutura.Sistema;
 /// <summary>
 /// Serviço estático para manipulação de arquivos locais.
 /// </summary>
-public static class ServiçoDeManipulaçãoDeArquivosLocais
+public static class ManipuladorDeArquivos
 {
     /// <summary>
     /// Procura e extrai o conteúdo de um arquivo <b>".json"</b>
@@ -27,4 +27,28 @@ public static class ServiçoDeManipulaçãoDeArquivosLocais
 
         return File.ReadAllText(caminhoDoArquivo.First());
     }
+
+    public static List<FileInfo> ObterProjetosDeTesteDoDiretório(this DirectoryInfo diretório)
+    {
+        var listaDeProjetos = new List<string>();
+        using var processo = ExtensõesDeProcessos.ObterProcessoParaListaDeProjetosDeTestesDaSolução(
+            listaDeProjetos, diretório.FullName
+        );
+
+        processo.Start();
+        processo.WaitForExit();
+
+        return listaDeProjetos
+            .ConvertAll(projeto => new FileInfo(
+                Path.GetFullPath(projeto, diretório.FullName))
+            );
+    }
+
+    public static FileInfo? ObterPrimeiroArquivoComExtensão(this DirectoryInfo diretório, string extensão) =>
+        diretório
+            .EnumerateFiles(
+                $"*.{extensão}",
+                SearchOption.AllDirectories
+            )
+            .FirstOrDefault();
 }

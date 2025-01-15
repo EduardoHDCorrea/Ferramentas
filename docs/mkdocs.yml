@@ -9,6 +9,7 @@ extra:
 
 theme:
   name: material
+  language: pt-BR
   custom_dir: docs/assets/overrides
   logo: assets/logo
   favicon: assets/logo-dark.svg
@@ -54,7 +55,6 @@ extra_javascript:
 nav:
   - Início: index.md
   - API:
-      - API: api/index.md
       - Comandos:
         - Descrever PR: api/comandos/descrever-pr.md
         - Gerar CRUD: api/comandos/gerar-comandos-crud.md
