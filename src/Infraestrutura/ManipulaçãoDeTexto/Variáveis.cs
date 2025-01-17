@@ -89,7 +89,15 @@ public static class Variáveis
                 fim++;
             }
 
-            resultado = resultado.Replace(resultado[inicio..fim], valor, StringComparison.InvariantCulture);
+            try
+            {
+                resultado = resultado.Replace(resultado[inicio..fim], valor, StringComparison.InvariantCulture);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Não foi possível substituir a variável '{variavel}' pelo valor '{valor}'. \nErro: {e.Message}");
+                throw;
+            }
         }
 
         return resultado;

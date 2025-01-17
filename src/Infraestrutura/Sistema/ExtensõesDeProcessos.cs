@@ -27,25 +27,6 @@ public static class ExtensõesDeProcessos
         return linhas;
     }
 
-    public static async Task AguardarEncerramentoDoProcessoAsync(
-        this Process processo,
-        CancellationToken cancellationToken
-    ) => await Task.Run(() =>
-        {
-            while (!processo.HasExited)
-            {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    processo.CancelErrorRead();
-                    processo.CancelOutputRead();
-                    processo.Kill();
-                    break;
-                }
-
-                Thread.Sleep(100);
-            }
-        }, cancellationToken);
-
     public static Process DefinirComandoParaExecutar(this Process process, string comando)
     {
         process.StartInfo.Arguments = $"/c {comando}";
@@ -58,13 +39,35 @@ public static class ExtensõesDeProcessos
         return process;
     }
 
+    public static Process ObterProcessoDeRestoreDotNet(this DirectoryInfo diretórioRaíz)
+    {
+        var processo = ObterProcessoBase();
+        processo.DefinirDiretórioDeExecução(diretórioRaíz.FullName);
+        processo.DefinirComandoParaExecutar(
+            "dotnet restore --verbosity quiet"
+        );
+        return processo;
+    }
+
+    public static Process ObterProcessoDeBuildDotNet(this DirectoryInfo diretórioRaíz)
+    {
+        var processo = ObterProcessoBase();
+        processo.DefinirDiretórioDeExecução(diretórioRaíz.FullName);
+        processo.DefinirComandoParaExecutar(
+            "dotnet build --no-restore --verbosity quiet"
+        );
+        return processo;
+    }
+
     public static Process ObterProcessoDeExecuçãoDeTestes(
-        this DirectoryInfo diretórioRaíz
+        this DirectoryInfo diretórioRaíz, string caminhoDoRunSettings
     )
     {
         var processo = ObterProcessoBase();
         processo.DefinirDiretórioDeExecução(diretórioRaíz.FullName);
-        processo.DefinirComandoParaExecutar("dotnet test --logger trx");
+        processo.DefinirComandoParaExecutar(
+            $"dotnet test --no-build --no-restore --settings {caminhoDoRunSettings}" // -p:TestTfmsInParallel=false
+        );
         return processo;
     }
 
@@ -78,16 +81,35 @@ public static class ExtensõesDeProcessos
         processo.DefinirComandoParaExecutar("dotnet sln list");
         processo.OutputDataReceived += (_, eventArgs) =>
         {
-            if (eventArgs.Data is { } projeto)
-                outputHandlerLista.Add(projeto.Trim());
+            if (eventArgs.Data is not { } projeto)
+                return;
+
+            if (!projeto.Contains('/') && !projeto.Contains('\\'))
+                return;
+
+            try
+            {
+                var informaçõesDoArquivo = new FileInfo(Path.GetFullPath(projeto, diretórioDeTrabalho));
+                var diretórioDoProjeto = informaçõesDoArquivo.DirectoryName;
+                if (diretórioDoProjeto is null)
+                    return;
+
+                outputHandlerLista.Add(diretórioDoProjeto);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         };
+
         return processo;
     }
 
     private static Process ObterProcessoBase()
     {
         var processo = new Process();
-        processo.StartInfo = new ProcessStartInfo("cmd")
+        processo.EnableRaisingEvents = true;
+        processo.StartInfo = new ProcessStartInfo("cmd.exe")
         {
             UseShellExecute = false,
             CreateNoWindow = true,
@@ -97,6 +119,7 @@ public static class ExtensõesDeProcessos
             StandardOutputEncoding = Encoding.UTF8,
             StandardErrorEncoding = Encoding.UTF8
         };
+
         return processo;
     }
 }

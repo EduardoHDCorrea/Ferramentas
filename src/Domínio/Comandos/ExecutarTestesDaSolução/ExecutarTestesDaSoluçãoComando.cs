@@ -16,7 +16,7 @@ public class ExecutarTestesDaSoluçãoComando : Command<ExecutarTestesDaSoluçã
 
     public override int Execute(CommandContext context, Parâmetros parâmetros)
     {
-        using var executorDeTestes = new ExecutorDeTestes(parâmetros.DiretórioDeExecução);
+        var executorDeTestes = new ExecutorDeTestes(parâmetros.DiretórioDeExecução);
         executorDeTestes.ExecutarTestes();
         return 0;
     }

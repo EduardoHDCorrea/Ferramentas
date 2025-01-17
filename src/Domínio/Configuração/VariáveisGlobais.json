@@ -1,0 +1,9 @@
+{
+  "$schema": "Schemas/VariáveisGlobais.schema.json",
+  "Itens": [
+    {
+      "Nome": "VariávelGlobalExemplo",
+      "Valor": "ValorExemplo"
+    }
+  ]
+}

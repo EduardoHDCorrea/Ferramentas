@@ -31,17 +31,17 @@ public static class ManipuladorDeArquivos
     public static List<FileInfo> ObterProjetosDeTesteDoDiretório(this DirectoryInfo diretório)
     {
         var listaDeProjetos = new List<string>();
-        using var processo = ExtensõesDeProcessos.ObterProcessoParaListaDeProjetosDeTestesDaSolução(
-            listaDeProjetos, diretório.FullName
+        using var processo = listaDeProjetos.ObterProcessoParaListaDeProjetosDeTestesDaSolução(
+            diretório.FullName
         );
 
         processo.Start();
+        processo.BeginOutputReadLine();
+        processo.BeginErrorReadLine();
         processo.WaitForExit();
 
         return listaDeProjetos
-            .ConvertAll(projeto => new FileInfo(
-                Path.GetFullPath(projeto, diretório.FullName))
-            );
+            .ConvertAll(projeto => new FileInfo(projeto));
     }
 
     public static FileInfo? ObterPrimeiroArquivoComExtensão(this DirectoryInfo diretório, string extensão) =>

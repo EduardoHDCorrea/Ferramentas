@@ -15,10 +15,21 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="Templates\**">
+        <Content Include="Templates\**">
+            <Pack>True</Pack>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-        </EmbeddedResource>
+            <PackagePath>contentFiles/any/any/templates</PackagePath>
+            <PackageCopyToOutput>true</PackageCopyToOutput>
+        </Content>
+
+        <Content Include="Configuração\**">
+            <Pack>True</Pack>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+            <PackagePath>contentFiles/any/any/config</PackagePath>
+            <PackageCopyToOutput>true</PackageCopyToOutput>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>

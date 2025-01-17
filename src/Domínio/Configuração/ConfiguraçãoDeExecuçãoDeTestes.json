@@ -1,0 +1,8 @@
+{
+  "$schema": "Schemas/ConfiguraçãoDeExecuçãoDeTestes.schema.json",
+  "NúmeroMáximoDeTestesEmParalelo": 1,
+  "DiretórioDeResultados": "{{Temp}}/ResultadosDeTestes/{{Solução}}",
+  "TempoMáximoDeExecuçãoDosTestesEmMilissegundos": 1200000,
+  "UtilizarBlame": "True",
+  "VerbosidadeDoConsole": "minimal"
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "NúmeroMáximoDeTestesEmParalelo": {
+      "type": "integer",
+      "description": "Número máximo de testes que podem ser executados em paralelo. \nUse 0 para indicar que o número de testes em paralelo deve ser igual ao número de processadores disponíveis."
+    },
+    "DiretórioDeResultados": {
+      "type": "string",
+      "description": "Caminho para o diretório onde os resultados dos testes serão armazenados."
+    },
+    "TempoMáximoDeExecuçãoDosTestesEmMilissegundos": {
+      "type": "integer",
+      "description": "Tempo máximo de execução dos testes em milissegundos."
+    },
+    "UtilizarBlame": {
+      "type": "string",
+      "description": "Indica se o blame deve ser utilizado.",
+      "enum": [
+        "True",
+        "False"
+      ]
+    },
+    "VerbosidadeDoConsole": {
+      "type": "string",
+      "enum": [
+        "quiet",
+        "minimal",
+        "normal",
+        "detailed",
+        "diagnostic"
+      ],
+      "description": "Verbosidade do console."
+    }
+  },
+  "required": [
+    "NúmeroMáximoDeTestesEmParalelo",
+    "DiretórioDeResultados",
+    "TempoMáximoDeExecuçãoDosTestesEmMilissegundos",
+    "UtilizarBlame",
+    "VerbosidadeDoConsole"
+  ]
+}
