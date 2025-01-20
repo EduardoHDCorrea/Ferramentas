@@ -30,6 +30,7 @@ internal static class Program
                     .WithAlias("cr");
             }
         );
+
         app.Run(args);
     }
 }

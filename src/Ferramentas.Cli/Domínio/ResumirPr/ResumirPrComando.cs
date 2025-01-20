@@ -368,8 +368,8 @@ internal sealed class ResumirPrComando : Command<ResumirPrComando.Parâmetros>
     private static string? ObterProjetoDoArquivo(string caminhoDoArquivo, string caminhoDoRepositório)
     {
         if (caminhoDoArquivo.EndsWith(".csproj"))
-            return caminhoDoArquivo;
-        
+            return Path.GetFullPath(caminhoDoArquivo, caminhoDoRepositório);
+
         var diretórioDoArquivo = Path.GetDirectoryName(caminhoDoArquivo);
         if (diretórioDoArquivo is null)
             return null;

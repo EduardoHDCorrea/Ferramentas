@@ -10,7 +10,7 @@
         <LicenseUrl>https://opensource.org/licenses/MIT</LicenseUrl>
         <RepositoryUrl>https://github.com/EduardoHDCorrea/Ferramentas</RepositoryUrl>
         <ToolCommandName>skyinfo</ToolCommandName>
-        <Version>1.2.0</Version>
+        <Version>1.3.0</Version>
         <Authors>EduardoHDCorrea</Authors>
         <Description>Ferramenta de CLI para facilitar alguns trabalhos repetitivos no setor.</Description>
         <PackageOutputPath>./nupkg</PackageOutputPath>
@@ -23,7 +23,7 @@
       <PackageReference Include="TextCopy" Version="6.2.1" />
       <PackageReference Include="ToMarkdownTable" Version="0.2.0" />
     </ItemGroup>
-    
+
     <ItemGroup>
         <None Include="pull-request-template.md" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always"/>
         <None Include="README.md" Pack="true" PackagePath="\"/>
