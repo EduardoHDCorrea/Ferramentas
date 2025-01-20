@@ -308,18 +308,18 @@ internal sealed class ResumirPrComando : Command<ResumirPrComando.Parâmetros>
                         QuantidadeDeAlterações = 1
                     };
 
-                    var projetoÉTeste = detalhesDoProjeto.NomeDoProjeto.Contains(
+                    var projetoEhTeste = detalhesDoProjeto.NomeDoProjeto.Contains(
                         "Tests",
                         StringComparison.InvariantCultureIgnoreCase
                     );
 
-                    if (projetoÉTeste)
+                    if (projetoEhTeste)
                         detalhesDoProjeto.TipoDoProjeto = TipoDoProjeto.Testes;
 
                     try
                     {
-                        var conteúdoDoArquivo = File.ReadAllText(projetoDoArquivo);
-                        if (conteúdoDoArquivo.Contains("<Version>"))
+                        var conteúdoDoArquivo = File.ReadAllLines(projetoDoArquivo);
+                        if (conteúdoDoArquivo.Any(x => x.Contains("<Version>")))
                             detalhesDoProjeto.TipoDoProjeto = TipoDoProjeto.Pacote;
                     }
                     catch
@@ -367,6 +367,9 @@ internal sealed class ResumirPrComando : Command<ResumirPrComando.Parâmetros>
 
     private static string? ObterProjetoDoArquivo(string caminhoDoArquivo, string caminhoDoRepositório)
     {
+        if (caminhoDoArquivo.EndsWith(".csproj"))
+            return caminhoDoArquivo;
+        
         var diretórioDoArquivo = Path.GetDirectoryName(caminhoDoArquivo);
         if (diretórioDoArquivo is null)
             return null;
