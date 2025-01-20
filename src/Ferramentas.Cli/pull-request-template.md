@@ -2,10 +2,7 @@
 
 {{EstadoAfetado}}
 
-## Comportamentos introduzidos, alterados, ou removidos: 
-
-> Descrição de comportamentos introduzidos, alterados, ou removidos. Por exemplo, a criação de um novo endpoint, a
-> alteração de um comportamento de um comando existente, ou a remoção de um serviço.
+## Comportamentos introduzidos, alterados, ou removidos:
 
 {{Comportamentos}}
 
@@ -14,8 +11,6 @@
 {{ConfiguracaoParaHabilitarOpcao}}
 
 ## Endpoints afetados:
-
-> Lista de endpoints afetados pelo PR. Por exemplo, `/NotasDeServico`, `/Usuarios`, ou `/Organizacoes`.
 
 {{Endpoint}}
 
