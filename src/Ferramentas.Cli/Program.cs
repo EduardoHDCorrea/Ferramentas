@@ -6,7 +6,7 @@ namespace Ferramentas.Cli;
 
 internal static class Program
 {
-    public static void Main(string[] args)
+    internal static void Main(string[] args)
     {
         var app = new CommandApp();
         app.Configure(
@@ -17,7 +17,6 @@ internal static class Program
                     .WithExample(
                         "resumir-pr",
                         @"D:\Temp\core",
-                        "tarefa/15860",
                         "-t",
                         "15970;16036;16202;16052",
                         "-o",
