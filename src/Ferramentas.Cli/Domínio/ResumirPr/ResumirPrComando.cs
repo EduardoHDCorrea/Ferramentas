@@ -11,16 +11,10 @@ namespace Ferramentas.Cli.Domínio.ResumirPr;
 
 internal sealed class ResumirPrComando : Command<ResumirPrComando.Parâmetros>
 {
-    private static bool _gitCredentialsSetup = false;
-
     public override int Execute(CommandContext contexto, Parâmetros parâmetros)
     {
         var diretório = Path.GetFullPath(parâmetros.Diretório);
         
-        // Configura credenciais Git para evitar múltiplas solicitações de autenticação
-        ConfigurarCredenciaisGit(diretório);
-        
-        // Obtém a branch ativa se não foi especificada como parâmetro
         var branch = parâmetros.Branch;
         if (string.IsNullOrWhiteSpace(branch))
         {
@@ -272,49 +266,6 @@ internal sealed class ResumirPrComando : Command<ResumirPrComando.Parâmetros>
         return 0;
     }
 
-    private static void ConfigurarCredenciaisGit(string diretórioDoRepositório)
-    {
-        if (_gitCredentialsSetup)
-            return;
-
-        try
-        {
-            AnsiConsole.Status()
-                .AutoRefresh(true)
-                .Spinner(Spinner.Known.Dots)
-                .SpinnerStyle(Style.Parse("yellow bold"))
-                .Start("Configurando autenticação Git...", contexto =>
-                {
-                    // Verifica se o gerenciador de credenciais está configurado
-                    var comandoVerificarHelper = "git config --get credential.helper";
-                    var resultado = comandoVerificarHelper.ExecutarComandoComRetorno(diretórioDoRepositório);
-                    
-                    if (resultado.Count == 0 || string.IsNullOrEmpty(resultado[0]))
-                    {
-                        // Se não estiver configurado, configura para usar cache em memória por 1 hora
-                        var comandoConfigurarCache = "git config --local credential.helper 'cache --timeout=3600'";
-                        comandoConfigurarCache.ExecutarComandoComRetorno(diretórioDoRepositório);
-                        AnsiConsole.MarkupLine("[dim]Configurado cache de credenciais Git por 1 hora.[/]");
-                    }
-                    else
-                    {
-                        AnsiConsole.MarkupLine($"[dim]Utilizando gerenciador de credenciais Git: {resultado[0]}[/]");
-                    }
-                    
-                    // Realiza uma operação de fetch para autenticar uma única vez no início
-                    var comandoFetch = "git fetch origin --quiet";
-                    comandoFetch.ExecutarComandoComRetorno(diretórioDoRepositório);
-                });
-
-            _gitCredentialsSetup = true;
-        }
-        catch (Exception ex)
-        {
-            AnsiConsole.MarkupLine($"[yellow]Aviso: Não foi possível configurar credenciais Git: {ex.Message}[/]");
-            // Continuamos mesmo com falha, pois pode estar usando SSH ou outro método que não precisa disso
-        }
-    }
-
     private static List<ProjetoAlterado> ListarProjetosAlteradosNosCommitsFiltrados(
         StatusContext context,
         string diretórioDoRepositório,
@@ -322,132 +273,100 @@ internal sealed class ResumirPrComando : Command<ResumirPrComando.Parâmetros>
         string[] identificadores
     )
     {
-        context.Status("[yellow bold]Identificando branch principal do repositório...[/]");
-        var branchPrincipal = ObterBranchPrincipal(diretórioDoRepositório);
-        AnsiConsole.MarkupLine($"✓ [green bold]Branch principal identificada: [/][blue bold]{branchPrincipal}[/]");
-
         context.Status("[yellow bold]Obtendo informações dos commits da branch...[/]");
         var commits = ObterInformaçõesDosCommitsDaBranch(branch, diretórioDoRepositório);
+
         AnsiConsole.MarkupLine("✓ [green bold]Obtendo informações dos commits da branch...[/]");
 
         context.Status("[yellow bold]Filtrando commits por identificador da tarefa...[/]");
         var commitsFiltrados = commits
             .Where(c => identificadores.Any(i => c.Mensagem.StartsWith("#" + i)))
             .ToList();
+
         AnsiConsole.MarkupLine("✓ [green bold]Filtrando commits por identificador da tarefa...[/]");
 
-        context.Status("[yellow bold]Comparando alterações com a branch principal...[/]");
-        var arquivosAlterados = ObterArquivosAlteradosComparadosComOrigemPrincipal(
-            branch, 
-            branchPrincipal, 
-            diretórioDoRepositório
-        );
-        AnsiConsole.MarkupLine("✓ [green bold]Comparando alterações com a branch principal...[/]");
-
-        context.Status("[yellow bold]Organizando projetos alterados...[/]");
+        context.Status("[yellow bold]Organizando projetos alterados nos commits filtrados...[/]");
         var projetosAlterados = new HashSet<ProjetoAlterado>();
-        
-        foreach (var arquivo in arquivosAlterados)
+        foreach (var commit in commitsFiltrados)
         {
-            try
-            {
-                var projetoDoArquivo = ObterProjetoDoArquivo(arquivo, diretórioDoRepositório);
-                if (projetoDoArquivo is null)
-                    continue;
-
-                var nomeDoProjeto = Path.GetFileNameWithoutExtension(projetoDoArquivo);
-
-                var detalhesExistentes = projetosAlterados
-                    .FirstOrDefault(x => x.NomeDoProjeto == nomeDoProjeto);
-                if (detalhesExistentes is not null)
-                {
-                    detalhesExistentes.QuantidadeDeAlterações++;
-                    continue;
-                }
-
-                var detalhesDoProjeto = new ProjetoAlterado
-                {
-                    NomeDoProjeto = nomeDoProjeto,
-                    QuantidadeDeAlterações = 1
-                };
-
-                var projetoEhTeste = detalhesDoProjeto.NomeDoProjeto.Contains(
-                    "Tests",
-                    StringComparison.InvariantCultureIgnoreCase
-                );
-
-                if (projetoEhTeste)
-                    detalhesDoProjeto.TipoDoProjeto = TipoDoProjeto.Testes;
-
+            var arquivos = ObterArquivosAlteradosDoCommit(commit.Hash, diretórioDoRepositório);
+            foreach (var arquivo in arquivos)
                 try
                 {
-                    var conteúdoDoArquivo = File.ReadAllLines(projetoDoArquivo);
-                    if (conteúdoDoArquivo.Any(x => x.Contains("<Version>")))
-                        detalhesDoProjeto.TipoDoProjeto = TipoDoProjeto.Pacote;
+                    var projetoDoArquivo = ObterProjetoDoArquivo(arquivo, diretórioDoRepositório);
+                    if (projetoDoArquivo is null)
+                        continue;
+
+                    var nomeDoProjeto = Path.GetFileNameWithoutExtension(projetoDoArquivo);
+
+                    var detalhesExistentes = projetosAlterados
+                        .FirstOrDefault(x => x.NomeDoProjeto == nomeDoProjeto);
+                    if (detalhesExistentes is not null)
+                    {
+                        detalhesExistentes.QuantidadeDeAlterações++;
+                        continue;
+                    }
+
+                    var detalhesDoProjeto = new ProjetoAlterado
+                    {
+                        NomeDoProjeto = nomeDoProjeto,
+                        QuantidadeDeAlterações = 1
+                    };
+
+                    var projetoEhTeste = detalhesDoProjeto.NomeDoProjeto.Contains(
+                        "Tests",
+                        StringComparison.InvariantCultureIgnoreCase
+                    );
+
+                    if (projetoEhTeste)
+                        detalhesDoProjeto.TipoDoProjeto = TipoDoProjeto.Testes;
+
+                    try
+                    {
+                        var conteúdoDoArquivo = File.ReadAllLines(projetoDoArquivo);
+                        if (conteúdoDoArquivo.Any(x => x.Contains("<Version>")))
+                            detalhesDoProjeto.TipoDoProjeto = TipoDoProjeto.Pacote;
+                    }
+                    catch
+                    {
+                        // Ignorada
+                    }
+
+                    projetosAlterados.Add(detalhesDoProjeto);
                 }
                 catch
                 {
                     // Ignorada
                 }
-
-                projetosAlterados.Add(detalhesDoProjeto);
-            }
-            catch
-            {
-                // Ignorada
-            }
         }
 
-        AnsiConsole.MarkupLine("✓ [green bold]Organizando projetos alterados...[/]");
+        AnsiConsole.MarkupLine("✓ [green bold]Organizando projetos alterados nos commits filtrados...[/]");
         return projetosAlterados.OrderBy(x => x.TipoDoProjeto).ToList();
     }
 
-    private static string ObterBranchPrincipal(string diretórioDoRepositório)
+    private static string ObterBranchAtiva(string diretórioDoRepositório)
     {
         try
         {
-            // Tenta primeiro verificar se existe a branch main remota
-            var comando = "git ls-remote --heads origin main";
-            var resultadoMain = comando.ExecutarComandoComRetorno(diretórioDoRepositório);
-            if (resultadoMain.Count > 0 && !string.IsNullOrWhiteSpace(resultadoMain[0]))
-                return "origin/main";
+            var comando = "git symbolic-ref --short HEAD";
+            var resultado = comando.ExecutarComandoComRetorno(diretórioDoRepositório);
 
-            // Se não encontrou main, tenta master
-            comando = "git ls-remote --heads origin master";
-            var resultadoMaster = comando.ExecutarComandoComRetorno(diretórioDoRepositório);
-            if (resultadoMaster.Count > 0 && !string.IsNullOrWhiteSpace(resultadoMaster[0]))
-                return "origin/master";
+            if (resultado.Count > 0 && !string.IsNullOrWhiteSpace(resultado[0]))
+                return resultado[0];
 
-            // Se ainda não encontrou, tenta determinar a branch padrão do repositório
-            comando = "git remote show origin";
-            var resultadoRemote = comando.ExecutarComandoComRetorno(diretórioDoRepositório);
-            var linhaBranchPadrao = resultadoRemote.FirstOrDefault(linha => 
-                linha.Contains("HEAD branch:") || linha.Contains("HEAD branch"));
-                
-            if (linhaBranchPadrao != null)
-            {
-                var branchPadrao = linhaBranchPadrao.Split(':').Last().Trim();
-                return $"origin/{branchPadrao}";
-            }
+            // Se estiver em estado de desanexo (detached HEAD), retornar hash curto
+            comando = "git rev-parse --short HEAD";
+            resultado = comando.ExecutarComandoComRetorno(diretórioDoRepositório);
+            if (resultado.Count > 0 && !string.IsNullOrWhiteSpace(resultado[0]))
+                return resultado[0];
 
-            // Fallback para origin/master se não encontrar
-            return "origin/master";
+            throw new Exception("Não foi possível determinar a branch ativa");
         }
-        catch
+        catch (Exception ex)
         {
-            // Em caso de erro, assume origin/master como padrão
-            return "origin/master";
+            AnsiConsole.MarkupLine($"[red bold]Erro ao obter branch atual: {ex.Message}[/]");
+            throw new Exception("Falha ao determinar a branch ativa. Verifique se você está em um repositório Git válido.", ex);
         }
-    }
-
-    private static List<string> ObterArquivosAlteradosComparadosComOrigemPrincipal(
-        string branch,
-        string branchPrincipal,
-        string diretórioDoRepositório
-    )
-    {
-        var comandoDiff = $"git -c core.quotepath=false diff --name-only {branchPrincipal}...{branch}";
-        return comandoDiff.ExecutarComandoComRetorno(diretórioDoRepositório);
     }
 
     private static List<InformaçõesDoCommit> ObterInformaçõesDosCommitsDaBranch(
@@ -479,7 +398,7 @@ internal sealed class ResumirPrComando : Command<ResumirPrComando.Parâmetros>
     private static string? ObterProjetoDoArquivo(string caminhoDoArquivo, string caminhoDoRepositório)
     {
         if (caminhoDoArquivo.EndsWith(".csproj"))
-            return Path.GetFullPath(caminhoDoArquivo, caminhoDoRepositório);
+            return caminhoDoArquivo;
 
         var diretórioDoArquivo = Path.GetDirectoryName(caminhoDoArquivo);
         if (diretórioDoArquivo is null)
@@ -502,31 +421,6 @@ internal sealed class ResumirPrComando : Command<ResumirPrComando.Parâmetros>
         }
 
         return null;
-    }
-
-    private static string ObterBranchAtiva(string diretórioDoRepositório)
-    {
-        try
-        {
-            var comando = "git symbolic-ref --short HEAD";
-            var resultado = comando.ExecutarComandoComRetorno(diretórioDoRepositório);
-            
-            if (resultado.Count > 0 && !string.IsNullOrWhiteSpace(resultado[0]))
-                return resultado[0];
-            
-            // Se estiver em estado de desanexo (detached HEAD), retornar hash curto
-            comando = "git rev-parse --short HEAD";
-            resultado = comando.ExecutarComandoComRetorno(diretórioDoRepositório);
-            if (resultado.Count > 0 && !string.IsNullOrWhiteSpace(resultado[0]))
-                return resultado[0];
-                
-            throw new Exception("Não foi possível determinar a branch ativa");
-        }
-        catch (Exception ex)
-        {
-            AnsiConsole.MarkupLine($"[red bold]Erro ao obter branch atual: {ex.Message}[/]");
-            throw new Exception("Falha ao determinar a branch ativa. Verifique se você está em um repositório Git válido.", ex);
-        }
     }
 
     public sealed class Parâmetros : CommandSettings
